@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UAUIngleza_plc.Pages"
+             Title="Configuração PLC">
+
+    <ScrollView Padding="20" Spacing="20">
+        <VerticalStackLayout Spacing="20">
+
+            <Label Text="Configuração do PLC" FontSize="24" FontAttributes="Bold" />
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Endereço IP:" FontAttributes="Bold" />
+                <Entry x:Name="IpEntry" 
+                       Text="{Binding IpAddress}" 
+                       Placeholder="192.168.1.100"
+                       Keyboard="Telephone" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Rack:" FontAttributes="Bold" />
+                <Entry Text="{Binding Rack}" 
+                       Placeholder="0"
+                       Keyboard="Numeric" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Slot:" FontAttributes="Bold" />
+                <Entry Text="{Binding Slot}" 
+                       Placeholder="0"
+                       Keyboard="Numeric" />
+            </VerticalStackLayout>
+
+            <Label Text="{Binding StatusMessage}" 
+                   FontSize="14" 
+                   TextColor="Gray"
+                   Margin="0,10,0,0" />
+
+            <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
+                <Button Text="Salvar Configuração" 
+                        Command="{Binding SaveConfigCommand}"
+                        BackgroundColor="#2196F3" />
+
+                <Button Text="Conectar ao PLC" 
+                        Command="{Binding ConnectCommand}"
+                        IsEnabled="{Binding IsConnecting, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="#4CAF50" />
+
+                <Button Text="Desconectar" 
+                        Command="{Binding DisconnectCommand}"
+                        IsEnabled="{Binding IsConnected}"
+                        BackgroundColor="#f44336" />
+            </VerticalStackLayout>
+
+            <Frame BorderColor="Green" CornerRadius="10" Padding="15" Margin="0,20,0,0">
+                <VerticalStackLayout>
+                    <Label Text="Status da Conexão:" FontAttributes="Bold" />
+                    <Label Text="{Binding IsConnected, StringFormat='Conectado: {0}'}" 
+                           TextColor="{Binding IsConnected, Converter={StaticResource ConnectionColorConverter}}" />
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

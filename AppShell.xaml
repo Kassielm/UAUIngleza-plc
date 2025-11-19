@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="UAUIngleza_plc.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:UAUIngleza_plc"
+    xmlns:pages="clr-namespace:UAUIngleza_plc.Pages"
+    Title="UAUIngleza_plc"
+    FlyoutBehavior="Flyout"
+    FlyoutWidth="250">
+
+    <!-- Header do Flyout -->
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{StaticResource Primary}" 
+              HeightRequest="150" 
+              Padding="20">
+            <VerticalStackLayout VerticalOptions="Center">
+                <Label Text="UAU Ingleza" 
+                       FontSize="24" 
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Start"/>
+                <Label Text="Sistema PLC" 
+                       FontSize="14"
+                       TextColor="White"
+                       Opacity="0.8"
+                       HorizontalOptions="Start"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Item Principal -->
+    <FlyoutItem Title="Home" Icon="home.png">
+        <ShellContent
+            Title="Home"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+    </FlyoutItem>
+
+    <!-- Câmera -->
+    <FlyoutItem Title="Camera" Icon="camera.png">
+        <ShellContent
+            Title="Camera"
+            ContentTemplate="{DataTemplate pages:CameraPage}"
+            Route="CameraPage" />
+    </FlyoutItem>
+
+    <!-- Configurações -->
+    <FlyoutItem Title="Configurações" Icon="settings.png">
+        <ShellContent
+            Title="Configurações"
+            ContentTemplate="{DataTemplate pages:ConfiguracoesPage}"
+            Route="ConfiguracoesPage" />
+    </FlyoutItem>
+
+    <!-- Separador -->
+    <MenuItem Text="───────────────" IsEnabled="False" />
+
+    <!-- Receitas -->
+    <FlyoutItem Title="Receita 1" Icon="recipe.png">
+        <ShellContent
+            Title="Receita 1"
+            ContentTemplate="{DataTemplate pages:Receita1Page}"
+            Route="Receita1Page" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Receita 2" Icon="recipe.png">
+        <ShellContent
+            Title="Receita 2"
+            ContentTemplate="{DataTemplate pages:Receita2Page}"
+            Route="Receita2Page" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Receita 3" Icon="recipe.png">
+        <ShellContent
+            Title="Receita 3"
+            ContentTemplate="{DataTemplate pages:Receita3Page}"
+            Route="Receita3Page" />
+    </FlyoutItem>
+
+</Shell>

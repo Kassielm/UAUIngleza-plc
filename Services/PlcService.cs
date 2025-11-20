@@ -1,9 +1,8 @@
 ﻿using Sharp7;
-using Sharp7.Rx;
 using System.Diagnostics;
 using UAUIngleza_plc.Models;
 
-namespace UAUIngleza_plc.Services.Plc
+namespace UAUIngleza_plc.Services
 {
     public interface IPLCService
     {
@@ -34,16 +33,16 @@ namespace UAUIngleza_plc.Services.Plc
                 bool success = result == 0;
 
                 if (success)
-                    Debug.WriteLine("Conectado ao PLC com sucesso!");
+                    Debug.WriteLine("✅ Conectado ao PLC com sucesso!");
                 else
-                    Debug.WriteLine($"Erro ao conectar: código {result}");
+                    Debug.WriteLine($"❌ Erro ao conectar: código {result}");
 
-                return success;
+                return await Task.FromResult(success);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exceção ao conectar: {ex.Message}");
-                return false;
+                Debug.WriteLine($"❌ Exceção ao conectar: {ex.Message}");
+                return await Task.FromResult(false);
             }
         }
     }

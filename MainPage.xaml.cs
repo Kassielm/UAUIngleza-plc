@@ -24,7 +24,7 @@ namespace UAUIngleza_plc
             SemanticScreenReader.Announce(CounterBtn.Text);
         }
 
-        public Sharp7Plc plc = new Sharp7Plc("192.168.220", 0, 1);
+        public Sharp7Plc plc = new Sharp7Plc("192.168.68.188", 0, 0);
 
         public void InitializeConnetion()
         {
@@ -35,7 +35,7 @@ namespace UAUIngleza_plc
         {
             try
             {
-                await plc.SetValue<bool>("DB0.DBX100.1", true);
+                await plc.SetValue<bool>("M0.0", true);
             }
             catch (Exception ex)
             {

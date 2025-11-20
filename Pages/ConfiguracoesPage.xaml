@@ -1,61 +1,117 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="UAUIngleza_plc.Pages"
-             Title="Configuração PLC">
+             x:Class="UAUIngleza_plc.Pages.ConfiguracoesPage"
+             Title="Configuração PLC"
+             BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#1a1a1a}">
 
-    <ScrollView Padding="20" Spacing="20">
+    <ScrollView Padding="20">
         <VerticalStackLayout Spacing="20">
 
-            <Label Text="Configuração do PLC" FontSize="24" FontAttributes="Bold" />
+            <Label Text="⚙️ Configuração do PLC" 
+                   FontSize="28" 
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#1a1a1a, Dark=#FFFFFF}"
+                   Margin="0,10,0,20" />
 
+            <!-- IP Address -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Endereço IP:" FontAttributes="Bold" />
+                <Label Text="📡 Endereço IP:" 
+                       FontAttributes="Bold"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
                 <Entry x:Name="IpEntry" 
                        Text="{Binding IpAddress}" 
                        Placeholder="192.168.1.100"
-                       Keyboard="Telephone" />
+                       Keyboard="Telephone"
+                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
+            <!-- Rack -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Rack:" FontAttributes="Bold" />
+                <Label Text="🔧 Rack:" 
+                       FontAttributes="Bold"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
                 <Entry Text="{Binding Rack}" 
                        Placeholder="0"
-                       Keyboard="Numeric" />
+                       Keyboard="Numeric"
+                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
+            <!-- Slot -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Slot:" FontAttributes="Bold" />
+                <Label Text="📍 Slot:" 
+                       FontAttributes="Bold"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
                 <Entry Text="{Binding Slot}" 
                        Placeholder="0"
-                       Keyboard="Numeric" />
+                       Keyboard="Numeric"
+                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
-            <Label Text="{Binding StatusMessage}" 
-                   FontSize="14" 
-                   TextColor="Gray"
-                   Margin="0,10,0,0" />
+            <!-- Status Message -->
+            <Border Padding="15" 
+                   Margin="0,10,0,0"
+                   BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
+                <Label Text="{Binding StatusMessage}" 
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#555, Dark=#BBB}"
+                       LineBreakMode="WordWrap" />
+            </Border>
 
-            <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
-                <Button Text="Salvar Configuração" 
+            <!-- Buttons -->
+            <VerticalStackLayout Spacing="12" Margin="0,20,0,0">
+                <Button Text="💾 Salvar Configuração" 
                         Command="{Binding SaveConfigCommand}"
-                        BackgroundColor="#2196F3" />
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        Padding="15,12"
+                        CornerRadius="8"
+                        FontSize="16" />
 
-                <Button Text="Conectar ao PLC" 
+                <Button Text="🔗 Conectar ao PLC" 
                         Command="{Binding ConnectCommand}"
                         IsEnabled="{Binding IsConnecting, Converter={StaticResource InvertedBoolConverter}}"
-                        BackgroundColor="#4CAF50" />
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        Padding="15,12"
+                        CornerRadius="8"
+                        FontSize="16" />
 
-                <Button Text="Desconectar" 
+                <Button Text="🔌 Desconectar" 
                         Command="{Binding DisconnectCommand}"
                         IsEnabled="{Binding IsConnected}"
-                        BackgroundColor="#f44336" />
+                        BackgroundColor="#f44336"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        Padding="15,12"
+                        CornerRadius="8"
+                        FontSize="16" />
             </VerticalStackLayout>
 
-            <Frame BorderColor="Green" CornerRadius="10" Padding="15" Margin="0,20,0,0">
+            <!-- Connection Status -->
+            <Frame BorderColor="{Binding IsConnected, Converter={StaticResource ConnectionBorderConverter}}" 
+                   CornerRadius="10" 
+                   Padding="15" 
+                   Margin="0,20,0,0"
+                   BackgroundColor="{Binding IsConnected, Converter={StaticResource ConnectionBgConverter}}">
                 <VerticalStackLayout>
-                    <Label Text="Status da Conexão:" FontAttributes="Bold" />
+                    <Label Text="Status da Conexão:" 
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="{AppThemeBinding Light=#333, Dark=#FFF}" />
                     <Label Text="{Binding IsConnected, StringFormat='Conectado: {0}'}" 
+                           FontSize="14"
                            TextColor="{Binding IsConnected, Converter={StaticResource ConnectionColorConverter}}" />
                 </VerticalStackLayout>
             </Frame>

@@ -1,20 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
-using UAUIngleza_plc.Models;
 
 namespace UAUIngleza_plc.Services
 {
     public interface IStorageService
     {
-        Task SaveConfigAsync(PlcConfiguration config);
-        Task<PlcConfiguration> GetConfigAsync();
+        Task SaveConfigAsync(Models.SystemConfiguration config);
+        Task<Models.SystemConfiguration> GetConfigAsync();
     }
 
     public class StorageService : IStorageService
     {
         private const string ConfigKey = "plcConfiguration";
 
-        public async Task SaveConfigAsync(PlcConfiguration config)
+        public async Task SaveConfigAsync(Models.SystemConfiguration config)
         {
             try
             {
@@ -27,7 +26,7 @@ namespace UAUIngleza_plc.Services
             }
         }
         
-        public async Task<PlcConfiguration> GetConfigAsync()
+        public async Task<Models.SystemConfiguration> GetConfigAsync()
         {
             try
             {
@@ -36,7 +35,7 @@ namespace UAUIngleza_plc.Services
                 {
                     return null;
                 }
-                  return JsonSerializer.Deserialize<PlcConfiguration>(json);
+                  return JsonSerializer.Deserialize<Models.SystemConfiguration>(json);
             }
             catch (Exception ex)
             {

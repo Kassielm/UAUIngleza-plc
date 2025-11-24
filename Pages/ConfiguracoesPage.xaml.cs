@@ -131,6 +131,7 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
                 IpAddress = config.IpAddress;
                 Rack = config.Rack;
                 Slot = config.Slot;
+                CameraIp = config.CameraIp;
                 StatusMessage = "✅ Configuração carregada.";
             }
         }
@@ -149,12 +150,12 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
                 StatusMessage = "⚠️ Configuração inválida. Verifique os campos.";
                 return;
             }
-
-            var config = new PlcConfiguration
+            var config = new Models.SystemConfiguration
             {
                 IpAddress = IpAddress,
                 Rack = Rack,
-                Slot = Slot
+                Slot = Slot,
+                CameraIp = CameraIp
             };
 
             await _storageService.SaveConfigAsync(config);
@@ -179,7 +180,7 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
             IsConnecting = true;
             StatusMessage = "🔄 Conectando ao PLC...";
 
-            var config = new PlcConfiguration
+            var config = new Models.SystemConfiguration
             {
                 IpAddress = IpAddress,
                 Rack = Rack,

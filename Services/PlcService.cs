@@ -6,7 +6,7 @@ namespace UAUIngleza_plc.Services
 {
     public interface IPLCService
     {
-        Task<bool> ConnectAsync(PlcConfiguration config);
+        Task<bool> ConnectAsync(Models.SystemConfiguration config);
         bool IsConnected { get; }
     }
 
@@ -19,8 +19,7 @@ namespace UAUIngleza_plc.Services
         {
             _client = new S7Client();
         }
-
-        public async Task<bool> ConnectAsync(PlcConfiguration config)
+        public async Task<bool> ConnectAsync(Models.SystemConfiguration config)
         {
             try
             {

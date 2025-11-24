@@ -1,129 +1,129 @@
-//using UAUIngleza_plc.ViewModels;
-
-//namespace UAUIngleza_plc.Pages
-//{
-//    public partial class ConfiguracoesPage : ContentPage
-//    {
-//        public ConfiguracoesPage(ConfiguracoesViewModel viewModel)
-//        {
-//            InitializeComponent();
-//            BindingContext = viewModel;
-//        }
-//    }
-//}
-using System.ComponentModel;
+Ôªøusing System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using UAUIngleza_plc.Models;
 using UAUIngleza_plc.Services;
 
-namespace UAUIngleza_plc.Pages
+namespace UAUIngleza_plc.Pages;
+
+public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
 {
-    public partial class ConfiguracoesPage : ContentPage
+    private readonly IStorageService _storageService;
+    private readonly IPLCService _plcService;
+
+    private string _ipAddress = "";
+    private int _rack = 0;
+    private int _slot = 0;
+    private string _cameraIp = "";
+    private string _statusMessage = "Aguardando configura√ß√£o...";
+    private bool _isConnecting = false;
+    private bool _isConnected = false;
+
+    public string IpAddress
     {
-        private readonly IStorageService _storageService;
-        private readonly IPLCService _plcService;
-
-        private string _ipAddress = "";
-        private int _rack = 0;
-        private int _slot = 0;
-        private string _statusMessage = "Aguardando configuraÁ„o...";
-        private bool _isConnecting = false;
-        private bool _isConnected = false;
-
-        public string IpAddress
+        get => _ipAddress;
+        set
         {
-            get => _ipAddress;
-            set
+            if (_ipAddress != value)
             {
-                if (_ipAddress != value)
-                {
-                    _ipAddress = value;
-                    OnPropertyChanged();
-                }
+                _ipAddress = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public int Rack
+    public int Rack
+    {
+        get => _rack;
+        set
         {
-            get => _rack;
-            set
+            if (_rack != value)
             {
-                if (_rack != value)
-                {
-                    _rack = value;
-                    OnPropertyChanged();
-                }
+                _rack = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public int Slot
+    public int Slot
+    {
+        get => _slot;
+        set
         {
-            get => _slot;
-            set
+            if (_slot != value)
             {
-                if (_slot != value)
-                {
-                    _slot = value;
-                    OnPropertyChanged();
-                }
+                _slot = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public string StatusMessage
+    public string CameraIp
+    {
+        get => _cameraIp;
+        set
         {
-            get => _statusMessage;
-            set
+            if (_cameraIp != value)
             {
-                if (_statusMessage != value)
-                {
-                    _statusMessage = value;
-                    OnPropertyChanged();
-                }
+                _cameraIp = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public bool IsConnecting
+    public string StatusMessage
+    {
+        get => _statusMessage;
+        set
         {
-            get => _isConnecting;
-            set
+            if (_statusMessage != value)
             {
-                if (_isConnecting != value)
-                {
-                    _isConnecting = value;
-                    OnPropertyChanged();
-                }
+                _statusMessage = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public bool IsConnected
+    public bool IsConnecting
+    {
+        get => _isConnecting;
+        set
         {
-            get => _isConnected;
-            set
+            if (_isConnecting != value)
             {
-                if (_isConnected != value)
-                {
-                    _isConnected = value;
-                    OnPropertyChanged();
-                }
+                _isConnecting = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public ICommand SaveConfigCommand { get; }
-        public ICommand ConnectCommand { get; }
-
-        public ConfiguracoesPage(IStorageService storageService, IPLCService plcService)
+    public bool IsConnected
+    {
+        get => _isConnected;
+        set
         {
-            _storageService = storageService;
-            _plcService = plcService;
-
-            SaveConfigCommand = new Command(async () => await SaveConfiguration());
-            ConnectCommand = new Command(async () => await Connect());
-
-            LoadConfiguration();
+            if (_isConnected != value)
+            {
+                _isConnected = value;
+                OnPropertyChanged();
+            }
         }
+    }
 
-        private async void LoadConfiguration()
+    public ConfiguracoesPage()
+    {
+        InitializeComponent();
+
+        _storageService = ServiceHelper.GetService<IStorageService>();
+        _plcService = ServiceHelper.GetService<IPLCService>();
+
+        BindingContext = this;
+
+        LoadConfiguration();
+    }
+
+    private async void LoadConfiguration()
+    {
+        try
         {
             var config = await _storageService.GetConfigAsync();
             if (config != null)
@@ -131,93 +131,105 @@ namespace UAUIngleza_plc.Pages
                 IpAddress = config.IpAddress;
                 Rack = config.Rack;
                 Slot = config.Slot;
-                StatusMessage = "ConfiguraÁ„o carregada.";
+                StatusMessage = "‚úÖ Configura√ß√£o carregada.";
             }
         }
-
-        private async Task SaveConfiguration()
+        catch (Exception ex)
         {
-            try
-            {
-                if (!ValidateInputs())
-                {
-                    StatusMessage = "ConfiguraÁ„o inv·lida. Verifique os campos.";
-                    return;
-                }
-
-                var config = new PlcConfiguration
-                {
-                    IpAddress = IpAddress,
-                    Rack = Rack,
-                    Slot = Slot
-                };
-
-                await _storageService.SaveConfigAsync(config);
-                StatusMessage = "ConfiguraÁ„o salva com sucesso.";
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Erro ao salvar configuraÁ„o: {ex.Message}";
-            }
+            StatusMessage = $"‚ùå Erro ao carregar: {ex.Message}";
         }
+    }
 
-        private async Task Connect()
+    private async void OnSaveConfigClicked(object sender, EventArgs e)
+    {
+        try
         {
-            try
+            if (!ValidateInputs())
             {
-                if (!ValidateInputs())
-                {
-                    StatusMessage = "ConfiguraÁ„o inv·lida. Verifique os campos.";
-                    return;
-                }
-
-                IsConnecting = true;
-                StatusMessage = "Conectando ao PLC...";
-
-                var config = new PlcConfiguration
-                {
-                    IpAddress = IpAddress,
-                    Rack = Rack,
-                    Slot = Slot
-                };
-
-                bool connected = await _plcService.ConnectAsync(config);
-
-                if (connected)
-                {
-                    IsConnected = true;
-                    StatusMessage = "Conectado ao PLC com sucesso.";
-                }
-                else
-                {
-                    IsConnected = false;
-                    StatusMessage = "Falha ao conectar ao PLC.";
-                }
+                StatusMessage = "‚ö†Ô∏è Configura√ß√£o inv√°lida. Verifique os campos.";
+                return;
             }
-            catch (Exception ex)
+
+            var config = new PlcConfiguration
             {
-                StatusMessage = $"Erro ao conectar: {ex.Message}";
-            }
-            finally
-            {
-                IsConnecting = false;
-            }
+                IpAddress = IpAddress,
+                Rack = Rack,
+                Slot = Slot
+            };
+
+            await _storageService.SaveConfigAsync(config);
+            StatusMessage = "‚úÖ Configura√ß√£o salva com sucesso.";
         }
-
-        private bool ValidateInputs()
+        catch (Exception ex)
         {
-            if (string.IsNullOrWhiteSpace(IpAddress))
-                return false;
-            if (Rack < 0 || Slot < 0)
-                return false;
-            return true;
+            StatusMessage = $"‚ùå Erro ao salvar: {ex.Message}";
         }
+    }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+    private async void OnConnectClicked(object sender, EventArgs e)
+    {
+        try
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            if (!ValidateInputs())
+            {
+                StatusMessage = "‚ö†Ô∏è Configura√ß√£o inv√°lida. Verifique os campos.";
+                return;
+            }
+
+            IsConnecting = true;
+            StatusMessage = "üîÑ Conectando ao PLC...";
+
+            var config = new PlcConfiguration
+            {
+                IpAddress = IpAddress,
+                Rack = Rack,
+                Slot = Slot
+            };
+
+            bool connected = await _plcService.ConnectAsync(config);
+
+            if (connected)
+            {
+                IsConnected = true;
+                StatusMessage = "‚úÖ Conectado ao PLC com sucesso.";
+            }
+            else
+            {
+                IsConnected = false;
+                StatusMessage = "‚ùå Falha ao conectar ao PLC.";
+            }
         }
+        catch (Exception ex)
+        {
+            StatusMessage = $"‚ùå Erro ao conectar: {ex.Message}";
+        }
+        finally
+        {
+            IsConnecting = false;
+        }
+    }
+
+    private bool ValidateInputs()
+    {
+        if (string.IsNullOrWhiteSpace(IpAddress))
+            return false;
+        if (Rack < 0 || Slot < 0)
+            return false;
+        return true;
+    }
+
+    public new event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+}
+
+public static class ServiceHelper
+{
+    public static T GetService<T>() where T : class
+    {
+        return IPlatformApplication.Current?.Services.GetService(typeof(T)) as T;
     }
 }

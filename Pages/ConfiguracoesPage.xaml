@@ -5,16 +5,15 @@
              Title="Configuração PLC"
              BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#1a1a1a}">
 
-    <ScrollView Padding="20">
+    <ScrollView Padding="20,20,20,100">
         <VerticalStackLayout Spacing="20">
 
-            <Label Text="⚙️ Configuração do PLC" 
+            <Label Text="⚙️ Configuração do Sistema" 
                    FontSize="28" 
                    FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light=#1a1a1a, Dark=#FFFFFF}"
                    Margin="0,10,0,20" />
 
-            <!-- IP Address -->
             <VerticalStackLayout Spacing="8">
                 <Label Text="📡 Endereço IP:" 
                        FontAttributes="Bold"
@@ -29,12 +28,12 @@
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
-            <!-- Rack -->
             <VerticalStackLayout Spacing="8">
                 <Label Text="🔧 Rack:" 
                        FontAttributes="Bold"
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
+
                 <Entry Text="{Binding Rack}" 
                        Placeholder="0"
                        Keyboard="Numeric"
@@ -43,12 +42,12 @@
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
-            <!-- Slot -->
             <VerticalStackLayout Spacing="8">
                 <Label Text="📍 Slot:" 
                        FontAttributes="Bold"
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
+
                 <Entry Text="{Binding Slot}" 
                        Placeholder="0"
                        Keyboard="Numeric"
@@ -57,20 +56,32 @@
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
-            <!-- Status Message -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="🖥️ Endereço IP da câmera"
+                       FontAttributes="Bold"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#333, Dark=#666}" />
+
+                <Entry Text="{Binding CameraIp}"
+                       Placeholder="192.168.1.200:60000"
+                       Keyboard="Telephone"
+                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=666}"
+                       TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
+                       BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
+            </VerticalStackLayout>
+
             <Border Padding="15" 
-                   Margin="0,10,0,0"
-                   BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
-                <Label Text="{Binding StatusMessage}" 
+                    Margin="0,10,0,0"
+                    BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
+                    <Label Text="{Binding StatusMessage}" 
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#555, Dark=#BBB}"
                        LineBreakMode="WordWrap" />
-            </Border>
+                </Border>
 
-            <!-- Buttons -->
-            <VerticalStackLayout Spacing="12" Margin="0,20,0,0">
+                <VerticalStackLayout Spacing="12" Margin="0,20,0,0">
                 <Button Text="💾 Salvar Configuração" 
-                        Command="{Binding SaveConfigCommand}"
+                        Clicked="OnSaveConfigClicked"
                         BackgroundColor="#2196F3"
                         TextColor="White"
                         FontAttributes="Bold"
@@ -79,42 +90,15 @@
                         FontSize="16" />
 
                 <Button Text="🔗 Conectar ao PLC" 
-                        Command="{Binding ConnectCommand}"
-                        IsEnabled="{Binding IsConnecting, Converter={StaticResource InvertedBoolConverter}}"
+                        Clicked="OnConnectClicked"
+                        IsEnabled="{Binding IsConnecting}"
                         BackgroundColor="#4CAF50"
                         TextColor="White"
                         FontAttributes="Bold"
                         Padding="15,12"
                         CornerRadius="8"
                         FontSize="16" />
-
-                <Button Text="🔌 Desconectar" 
-                        Command="{Binding DisconnectCommand}"
-                        IsEnabled="{Binding IsConnected}"
-                        BackgroundColor="#f44336"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        Padding="15,12"
-                        CornerRadius="8"
-                        FontSize="16" />
             </VerticalStackLayout>
-
-            <!-- Connection Status -->
-            <Frame BorderColor="{Binding IsConnected, Converter={StaticResource ConnectionBorderConverter}}" 
-                   CornerRadius="10" 
-                   Padding="15" 
-                   Margin="0,20,0,0"
-                   BackgroundColor="{Binding IsConnected, Converter={StaticResource ConnectionBgConverter}}">
-                <VerticalStackLayout>
-                    <Label Text="Status da Conexão:" 
-                           FontAttributes="Bold"
-                           FontSize="16"
-                           TextColor="{AppThemeBinding Light=#333, Dark=#FFF}" />
-                    <Label Text="{Binding IsConnected, StringFormat='Conectado: {0}'}" 
-                           FontSize="14"
-                           TextColor="{Binding IsConnected, Converter={StaticResource ConnectionColorConverter}}" />
-                </VerticalStackLayout>
-            </Frame>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

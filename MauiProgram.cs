@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using UAUIngleza_plc.Pages;
 using UAUIngleza_plc.Services;
-using UAUIngleza_plc.ViewModels;
+//using UAUIngleza_plc.ViewModels;
 
 namespace UAUIngleza_plc
 {
@@ -21,7 +21,7 @@ namespace UAUIngleza_plc
             builder.Services.AddSingleton<IStorageService, StorageService>();
             builder.Services.AddSingleton<IPLCService, PLCService>();
 
-            builder.Services.AddSingleton<ConfiguracoesViewModel>();
+            //builder.Services.AddSingleton<ConfiguracoesViewModel>();
 
             // Registrar Page
             builder.Services.AddSingleton<ConfiguracoesPage>();

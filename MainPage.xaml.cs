@@ -24,18 +24,18 @@ namespace UAUIngleza_plc
             SemanticScreenReader.Announce(CounterBtn.Text);
         }
 
-        public Sharp7Plc plc = new Sharp7Plc("192.168.68.188", 0, 0);
+        public Sharp7Plc plc = new Sharp7Plc("192.168.0.1", 0, 2);
 
         public void InitializeConnetion()
         {
             plc.InitializeConnection().Wait(3000);
         }
-
+        
         public async Task Setbit()
         {
             try
             {
-                await plc.SetValue<bool>("M0.0", true);
+                await plc.SetValue<short>("Db1.Int0", 1);
             }
             catch (Exception ex)
             {

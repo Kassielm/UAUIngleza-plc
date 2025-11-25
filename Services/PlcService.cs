@@ -67,6 +67,7 @@ namespace UAUIngleza_plc.Services
                     Console.WriteLine("⏱️ Timeout ao conectar ao PLC");
                     _connectionStatus.OnNext(default(ConnectionState));
                     CleanupConnection();
+                    Console.WriteLine("❌ Falha na conexão!");
                     return false;
                 }
 
@@ -120,7 +121,6 @@ namespace UAUIngleza_plc.Services
             _reconnectCancellation?.Cancel();
             _reconnectCancellation = new CancellationTokenSource();
 
-            // Tenta conectar inicialmente
             var connected = await ConnectAsync();
             
             if (!connected)

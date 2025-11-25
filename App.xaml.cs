@@ -6,7 +6,7 @@ namespace UAUIngleza_plc
 {
     public partial class App : Application
     {
-        private IPLCService _plcService;
+        private readonly IPLCService _plcService;
 
         public App(IPLCService plcService, IStorageService storageService)
         {
@@ -14,22 +14,55 @@ namespace UAUIngleza_plc
             _plcService = plcService;
         }
 
-        protected override async void OnStart()
-        {
-            base.OnStart();
-            try
-            {
-                _plcService.ConnectAsync().Wait(3000);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("deu ruim", ex);
-            }
-        }
-
         protected override Window CreateWindow(IActivationState? activationState)
         {
             return new Window(new AppShell());
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            
+            // Inicia a conexão em background sem bloquear a UI
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    Console.WriteLine("🚀 Iniciando conexão automática com o PLC...");
+                    await _plcService.StartAutoReconnect();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"⚠️ Erro ao iniciar conexão automática: {ex.Message}");
+                }
+            });
+        }
+
+        protected override void OnSleep()
+        {
+            base.OnSleep();
+            Console.WriteLine("😴 Aplicação entrando em modo sleep");
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            Console.WriteLine("👀 Aplicação retomada");
+            
+            if (!_plcService.IsConnected)
+            {
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _plcService.ConnectAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"⚠️ Erro ao reconectar após resume: {ex.Message}");
+                    }
+                });
+            }
         }
     }
 }

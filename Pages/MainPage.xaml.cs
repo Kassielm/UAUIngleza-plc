@@ -255,29 +255,22 @@ namespace UAUIngleza_plc
             }
         }
 
-        private async void OnRecipe1Clicked(object? sender, EventArgs e)
+        private async void OnRecipeClicked(object sender, EventArgs e)
         {
-            await WriteRecipeToPLC(0); // Receita 1 = valor 0
-        }
-
-        private async void OnRecipe2Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(1); // Receita 2 = valor 1
-        }
-
-        private async void OnRecipe3Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(2); // Receita 3 = valor 2
-        }
-
-        private async void OnRecipe4Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(3); // Receita 4 = valor 3
-        }
-
-        private async void OnRecipe5Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(4); // Receita 5 = valor 4
+            try
+            {
+                if (sender is Button botao)
+                {
+                    if (int.TryParse(botao.CommandParameter?.ToString(), out int numero))
+                    {
+                        await WriteRecipeToPLC(numero);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Erro", $"Erro ao processar receita: {ex.Message}", "OK");
+            }
         }
 
         private void OnMenuClicked(object? sender, EventArgs e)

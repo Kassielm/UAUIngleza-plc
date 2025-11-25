@@ -35,7 +35,7 @@ public partial class CameraPage : ContentPage
 
             if (config != null)
             {
-                _cameraIp = config.CameraIp;
+                _cameraIp = config.CameraIp ?? string.Empty;
                 Console.WriteLine($"IP Carregado: {_cameraIp}");
 
                 SetUrl(_cameraIp);

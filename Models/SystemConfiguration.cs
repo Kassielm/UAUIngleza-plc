@@ -6,9 +6,9 @@ namespace UAUIngleza_plc.Models
 {
     public class SystemConfiguration
     {
-        public string IpAddress { get; set; }
+        public string? IpAddress { get; set; }
         public int Rack { get; set; }
         public int Slot { get; set; }
-        public string CameraIp { get; set; }
+        public string? CameraIp { get; set; }
     }
 }

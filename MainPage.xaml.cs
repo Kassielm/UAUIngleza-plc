@@ -5,6 +5,7 @@ namespace UAUIngleza_plc
     public partial class MainPage : ContentPage
     {
         int count = 0;
+        short plcteste = 0;
 
         public MainPage()
         {
@@ -35,19 +36,24 @@ namespace UAUIngleza_plc
         {
             try
             {
+                Console.WriteLine("chegou");
                 await plc.SetValue<short>("Db1.Int0", 1);
+                plcteste = await plc.GetValue<short>("Db1.Int0");
+                Console.WriteLine("Deu certo");
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw new Exception("Erro ao setar bit. " + ex.Message);
             }
         }
 
-        public async Task Resebit(string address)
+        public async Task Resebit()
         {
             try
             {
-                await plc.SetValue<bool>(address, false);
+                await plc.SetValue<short>("Db1.Int0", 0);
+                plcteste = await plc.GetValue<short>("Db1.Int0");
             }
             catch (Exception ex)
             {

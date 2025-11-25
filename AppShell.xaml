@@ -11,21 +11,12 @@
 
     <!-- Header do Flyout -->
     <Shell.FlyoutHeader>
-        <Grid BackgroundColor="{StaticResource Primary}" 
-              HeightRequest="150" 
-              Padding="20">
-            <VerticalStackLayout VerticalOptions="Center">
-                <Label Text="UAU Ingleza" 
-                       FontSize="24" 
-                       FontAttributes="Bold"
-                       TextColor="White"
-                       HorizontalOptions="Start"/>
-                <Label Text="Sistema PLC" 
-                       FontSize="14"
-                       TextColor="White"
-                       Opacity="0.8"
-                       HorizontalOptions="Start"/>
-            </VerticalStackLayout>
+        <Grid BackgroundColor="LightGray" 
+              HeightRequest="135" >
+            <Image Source="logo_conecsa.png"
+                   Aspect="AspectFit"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
 
@@ -52,7 +43,15 @@
             ContentTemplate="{DataTemplate pages:ConfiguracoesPage}"
             Route="ConfiguracoesPage" />
     </FlyoutItem>
-
+    
+    <!-- Configuração das receitas -->
+    <FlyoutItem Tittle="Receitas">
+        <ShellContent
+            Title="Receitas"
+            ContentTemplate="{DataTemplate pages:ReceitasPage}"
+            Route="ReceitasPage" />
+    </FlyoutItem>
+                
     <!-- Separador -->
     <MenuItem Text="───────────────" IsEnabled="False" />
 

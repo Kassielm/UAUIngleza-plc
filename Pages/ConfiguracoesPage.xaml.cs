@@ -128,10 +128,10 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
             var config = await _storageService.GetConfigAsync();
             if (config != null)
             {
-                IpAddress = config.IpAddress;
+                IpAddress = config.IpAddress ?? string.Empty;
                 Rack = config.Rack;
                 Slot = config.Slot;
-                CameraIp = config.CameraIp;
+                CameraIp = config.CameraIp ?? string.Empty;
                 StatusMessage = "✅ Configuração carregada.";
             }
         }
@@ -207,6 +207,19 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
         finally
         {
             IsConnecting = false;
+        }
+    }
+
+    private async void OnDisconnectClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            IsConnected = false;
+            StatusMessage = "🔌 Desconectado do PLC.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"❌ Erro ao desconectar: {ex.Message}";
         }
     }
 

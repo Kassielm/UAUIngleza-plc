@@ -1,48 +1,61 @@
-﻿using Sharp7;
+﻿using Microsoft.AspNetCore.Components;
+using Sharp7.Rx;
 using System.Diagnostics;
-using UAUIngleza_plc.Models;
 
 namespace UAUIngleza_plc.Services
 {
     public interface IPLCService
     {
-        Task<bool> ConnectAsync(Models.SystemConfiguration config);
-        bool IsConnected { get; }
+        Sharp7Plc Plc { get; }
+        Task ConnectAsync();
+        void Disconnect();
     }
-
     public class PLCService : IPLCService
     {
-        private S7Client _client;
-        public bool IsConnected => _client?.Connected ?? false;
+        private readonly IStorageService _storageService;
 
-        public PLCService()
+        public Sharp7Plc Plc { get; private set; }
+
+        public PLCService(IStorageService storageService)
         {
-            _client = new S7Client();
+            _storageService = storageService;
+
+            // usa endereço padrão para evitar erros
+            Plc = new Sharp7Plc("127.0.0.1", 0, 0);
         }
-        public async Task<bool> ConnectAsync(Models.SystemConfiguration config)
+
+        public async Task ConnectAsync()
         {
             try
             {
-                int result = _client.ConnectTo(
-                    config.IpAddress,
-                    config.Rack,
-                    config.Slot
-                );
+                var config = await _storageService.GetConfigAsync();
 
-                bool success = result == 0;
+                if (config != null && !string.IsNullOrEmpty(config.IpAddress))
+                {
+                    Plc?.Dispose();
 
-                if (success)
-                    Debug.WriteLine("✅ Conectado ao PLC com sucesso!");
+                    Console.WriteLine($"Tentando conectar em: {config.IpAddress} Rack: {config.Rack} Slot: {config.Slot}");
+
+                    Plc = new Sharp7Plc(config.IpAddress, config.Rack, config.Slot);
+
+                    await Plc.InitializeConnection();
+
+                    Console.WriteLine("✅ Conexão Inicializada!");
+                }
                 else
-                    Debug.WriteLine($"❌ Erro ao conectar: código {result}");
-
-                return await Task.FromResult(success);
+                {
+                    Console.WriteLine("⚠️ Nenhuma configuração encontrada no Storage.");
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"❌ Exceção ao conectar: {ex.Message}");
-                return await Task.FromResult(false);
+                Debug.WriteLine($"❌ Exceção ao conectar PLC: {ex.Message}");
             }
+        }
+
+        public void Disconnect()
+        {
+            Plc?.Dispose();
         }
     }
 }

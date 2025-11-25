@@ -7,16 +7,11 @@
     <Grid>
         <ScrollView>
             <VerticalStackLayout
-                Padding="30,60,30,0"
+                Padding="30,60,30,100"
                 Spacing="25">
-                <Image
-                    Source="dotnet_bot.png"
-                    HeightRequest="185"
-                    Aspect="AspectFit"
-                    SemanticProperties.Description="dot net bot in a submarine number ten" />
 
                 <Label
-                    Text="Bem-vindo!"
+                    Text="{Binding plcteste}"
                     Style="{StaticResource Headline}"
                     SemanticProperties.HeadingLevel="Level1" />
 
@@ -31,6 +26,13 @@
                     Text="Click me" 
                     SemanticProperties.Hint="Counts the number of times you click"
                     Clicked="Setbit"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    x:Name="ResetBtn"
+                    Text="Click me" 
+                    SemanticProperties.Hint="Counts the number of times you click"
+                    Clicked="Resetbit"
                     HorizontalOptions="Fill" />
             </VerticalStackLayout>
         </ScrollView>

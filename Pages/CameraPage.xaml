@@ -4,14 +4,6 @@
              x:Class="UAUIngleza_plc.Pages.CameraPage"
              Title="Câmera">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Styles/CameraStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
     <!-- Layout principal: Grid com 2 colunas -->
     <Grid ColumnSpacing="0">
         <Grid.ColumnDefinitions>
@@ -66,22 +58,22 @@
                                     WidthRequest="24"
                                     HeightRequest="24"
                                     StrokeThickness="2"
-                                    Stroke="{Binding IsPlcConnected, Converter={StaticResource BoolToColorConverter}}"
+                                    Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                     StrokeShape="RoundRectangle 12"
-                                    Background="{Binding IsPlcConnected, Converter={StaticResource BoolToColorConverter}}"
+                                    Background="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                     HorizontalOptions="Center">
                                 <Border.Shadow>
-                                    <Shadow Brush="{Binding IsPlcConnected, Converter={StaticResource BoolToColorConverter}}"
+                                    <Shadow Brush="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                             Radius="10"
                                             Opacity="0.8" />
                                 </Border.Shadow>
                             </Border>
 
                             <Label Grid.Row="2"
-                                   Text="{Binding IsPlcConnected, Converter={StaticResource BoolToStatusTextConverter}}"
+                                   Text="{Binding IsConnected, Converter={StaticResource BoolToStatusTextConverter}}"
                                    FontSize="11"
                                    FontAttributes="Bold"
-                                   TextColor="{Binding IsPlcConnected, Converter={StaticResource BoolToColorConverter}}"
+                                   TextColor="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                    HorizontalOptions="Center" />
                         </Grid>
                     </Border>

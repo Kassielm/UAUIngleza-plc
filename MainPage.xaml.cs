@@ -1,5 +1,4 @@
-﻿using Sharp7.Rx;
-using Sharp7.Rx.Enums;
+﻿using Sharp7.Rx.Enums;
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;

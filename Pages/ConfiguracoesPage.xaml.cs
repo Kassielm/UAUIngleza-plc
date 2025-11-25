@@ -164,18 +164,6 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
 
             await _storageService.SaveConfigAsync(config);
             StatusMessage = "✅ Configuração salva com sucesso.";
-            
-            // Pergunta se quer reconectar com as novas configurações
-            bool reconnect = await DisplayAlert(
-                "Configuração Salva", 
-                "Deseja reconectar com as novas configurações?", 
-                "Sim", 
-                "Não");
-            
-            if (reconnect)
-            {
-                OnConnectClicked(sender, e);
-            }
         }
         catch (Exception ex)
         {

@@ -182,6 +182,18 @@ namespace UAUIngleza_plc.Services
             }
         }
 
+        public async Task SetIntBit(string address, short value)
+        {
+            try
+            {
+                await Plc.SetValue<short>(address, value);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao definir valor INT no PLC: {ex.Message}");
+            }
+        }
+
         public void Disconnect()
         {
             StopAutoReconnect();

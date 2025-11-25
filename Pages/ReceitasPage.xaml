@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UAUIngleza_plc.Pages.ReceitasPage"
+             Title="Receitas">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20 20 20 100" Spacing="20">
+
+            <Label Text="⚙️ Configuração de Receitas"
+                   Style="{StaticResource Headline}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20" />
+
+            <!-- Receita 1 -->
+            <Border Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📋 Receita 1"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+                    
+                    <Label Text="Nome da Receita:" FontSize="12" />
+                    <Entry x:Name="Recipe1Name"
+                           Keyboard="Text"
+                           MaxLength="30" />
+                    
+                    <Label Text="Número de Garrafas:" FontSize="12" />
+                    <Entry x:Name="Recipe1Bottles"
+                           Placeholder="Ex: 10"
+                           Keyboard="Numeric"
+                           MaxLength="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Receita 2 -->
+            <Border Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📋 Receita 2"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+                    
+                    <Label Text="Nome da Receita:" FontSize="12" />
+                    <Entry x:Name="Recipe2Name"
+                           Keyboard="Text"
+                           MaxLength="30" />
+                    
+                    <Label Text="Número de Garrafas:" FontSize="12" />
+                    <Entry x:Name="Recipe2Bottles"
+                           Placeholder="Ex: 15"
+                           Keyboard="Numeric"
+                           MaxLength="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Receita 3 -->
+            <Border Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📋 Receita 3"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+                    
+                    <Label Text="Nome da Receita:" FontSize="12" />
+                    <Entry x:Name="Recipe3Name"
+                           Keyboard="Text"
+                           MaxLength="30" />
+                    
+                    <Label Text="Número de Garrafas:" FontSize="12" />
+                    <Entry x:Name="Recipe3Bottles"
+                           Placeholder="Ex: 2"
+                           Keyboard="Numeric"
+                           MaxLength="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Receita 4 -->
+            <Border Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📋 Receita 4"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+                    
+                    <Label Text="Nome da Receita:" FontSize="12" />
+                    <Entry x:Name="Recipe4Name"
+                           Keyboard="Text"
+                           MaxLength="30" />
+                    
+                    <Label Text="Número de Garrafas:" FontSize="12" />
+                    <Entry x:Name="Recipe4Bottles"
+                           Placeholder="Ex: 5"
+                           Keyboard="Numeric"
+                           MaxLength="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Receita 5 -->
+            <Border Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="📋 Receita 5"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}" />
+                    
+                    <Label Text="Nome da Receita:" FontSize="12" />
+                    <Entry x:Name="Recipe5Name"
+                           Keyboard="Text"
+                           MaxLength="30" />
+                    
+                    <Label Text="Número de Garrafas:" FontSize="12" />
+                    <Entry x:Name="Recipe5Bottles"
+                           Placeholder="Ex: 8"
+                           Keyboard="Numeric"
+                           MaxLength="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Botão Salvar -->
+            <Button Text="💾 SALVAR RECEITAS"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HeightRequest="60"
+                    CornerRadius="15"
+                    Margin="0,20,0,0" />
+
+            <!-- Status Message -->
+            <Label x:Name="StatusLabel"
+                   Text=""
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource Primary}"
+                   IsVisible="False" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+    
+</ContentPage>

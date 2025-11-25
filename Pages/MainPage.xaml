@@ -11,6 +11,7 @@
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
+        <!-- WebView da Câmera (80%) -->
         <Border Grid.Column="0"
                 StrokeThickness="0">
             <WebView x:Name="CameraWebView"
@@ -19,6 +20,7 @@
                      BackgroundColor="Black" />
         </Border>
 
+        <!-- Menu Lateral (20%) -->
         <Border Grid.Column="1"
                 Background="#1a1a1a"
                 StrokeThickness="2"
@@ -42,8 +44,7 @@
                                Margin="0,0,0,10" />
 
                         <Button Text="Receita 1"
-                                Clicked="OnRecipeClicked"
-                                CommandParameter="1"
+                                Clicked="OnRecipe1Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -59,8 +60,7 @@
                         </Button>
 
                         <Button Text="Receita 2"
-                                Clicked="OnRecipeClicked"
-                                CommandParameter="2"
+                                Clicked="OnRecipe2Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -76,8 +76,7 @@
                         </Button>
 
                         <Button Text="Receita 3"
-                                Clicked="OnRecipeClicked"
-                                CommandParameter="3"
+                                Clicked="OnRecipe3Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -93,8 +92,7 @@
                         </Button>
 
                         <Button Text="Receita 4"
-                                Clicked="OnRecipeClicked"
-                                CommandParameter="4"
+                                Clicked="OnRecipe4Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -110,8 +108,7 @@
                         </Button>
 
                         <Button Text="Receita 5"
-                                Clicked="OnRecipeClicked"
-                                CommandParameter="5"
+                                Clicked="OnRecipe5Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -129,6 +126,7 @@
                     </VerticalStackLayout>
                 </ScrollView>
 
+                <!-- Status e Receita Selecionada -->
                 <VerticalStackLayout Grid.Row="1" 
                                      Spacing="8" 
                                      Margin="0,10,0,0">
@@ -138,6 +136,7 @@
                              HorizontalOptions="Fill"
                              Margin="0,0,0,8" />
 
+                    <!-- Status de Conexão -->
                     <Border Background="#2a2a2a"
                             Padding="8"
                             StrokeThickness="1"
@@ -173,6 +172,7 @@
                         </Grid>
                     </Border>
 
+                    <!-- Receita Selecionada -->
                     <Border Background="#2a2a2a"
                             Padding="12"
                             StrokeThickness="1"

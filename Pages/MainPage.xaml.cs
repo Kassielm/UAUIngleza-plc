@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using UAUIngleza_plc.Services;
+using UAUIngleza_plc.Models;
 
 namespace UAUIngleza_plc
 {
@@ -13,13 +14,13 @@ namespace UAUIngleza_plc
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly IPLCService _plcService;
         private readonly IStorageService _storageService;
+        private RecipesConfiguration _recipesConfig;
         private string _connectionStatus = "🔄 Verificando conexão...";
         private string _recipeValue = "---";
         private string _recipeText = "Nenhuma receita";
         private bool _isConnected = false;
         private bool _isProcessing = false;
 
-        // Endereço onde as receitas serão escritas
         private const string RecipeAddress = "DB1.Int0";
 
         public string ConnectionStatus
@@ -103,6 +104,7 @@ namespace UAUIngleza_plc
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            await LoadRecipesConfiguration();
             await LoadCameraConfiguration();
             SubscribeToConnectionStatus();
             SubscribeToBitChanges();
@@ -114,6 +116,20 @@ namespace UAUIngleza_plc
             _disposables.Clear();
         }
 
+        private async Task LoadRecipesConfiguration()
+        {
+            try
+            {
+                _recipesConfig = await _storageService.GetRecipesAsync();
+                Console.WriteLine("✅ Receitas carregadas do localStorage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao carregar receitas: {ex.Message}");
+                _recipesConfig = new RecipesConfiguration();
+            }
+        }
+
         private async Task LoadCameraConfiguration()
         {
             try
@@ -122,12 +138,17 @@ namespace UAUIngleza_plc
 
                 if (config != null && !string.IsNullOrEmpty(config.CameraIp))
                 {
+                    Console.WriteLine($"📹 Carregando câmera: {config.CameraIp}");
                     CameraWebView.Source = config.CameraIp;
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Nenhum IP de câmera configurado");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar configuração da câmera: {ex.Message}");
+                Console.WriteLine($"❌ Erro ao carregar configuração da câmera: {ex.Message}");
             }
         }
 
@@ -143,19 +164,22 @@ namespace UAUIngleza_plc
                         {
                             if (state == ConnectionState.Connected)
                             {
-                                ConnectionStatus = "ONLINE";
+                                ConnectionStatus = "🟢 PLC ONLINE";
                                 IsConnected = true;
+                                Console.WriteLine("✅ MainPage: PLC conectado!");
                             }
                             else
                             {
-                                ConnectionStatus = "OFFLINE";
+                                ConnectionStatus = "🔴 PLC OFFLINE";
                                 IsConnected = false;
                                 RecipeValue = "---";
+                                Console.WriteLine("❌ MainPage: PLC desconectado!");
                             }
                         },
                         error =>
                         {
-                            ConnectionStatus = "ERRO NO STATUS";
+                            Console.WriteLine($"❌ Erro ao monitorar status: {error.Message}");
+                            ConnectionStatus = "⚠️ ERRO NO STATUS";
                             IsConnected = false;
                         });
 
@@ -163,7 +187,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao subscrever status de conexão: {ex.Message}");
+                Console.WriteLine($"❌ Erro ao subscrever status de conexão: {ex.Message}");
             }
         }
 
@@ -183,6 +207,7 @@ namespace UAUIngleza_plc
                             TransmissionMode.OnChange)
                             .Catch<short, Exception>(ex =>
                             {
+                                Console.WriteLine($"⚠️ Erro ao ler {RecipeAddress}: {ex.Message}");
                                 return Observable.Return<short>(0);
                             });
                     })
@@ -191,9 +216,11 @@ namespace UAUIngleza_plc
                         value =>
                         {
                             RecipeValue = value.ToString();
+                            Console.WriteLine($"📊 Valor alterado em {RecipeAddress}: {value}");
                         },
                         error =>
                         {
+                            Console.WriteLine($"❌ Erro na notificação: {error.Message}");
                             RecipeValue = "ERRO";
                         });
 
@@ -201,7 +228,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao subscrever mudanças do bit: {ex.Message}");
+                Console.WriteLine($"❌ Erro ao subscrever mudanças do bit: {ex.Message}");
             }
         }
 
@@ -213,17 +240,9 @@ namespace UAUIngleza_plc
                 return;
             }
 
-            if (int.TryParse(value, out int recipeNum))
+            if (int.TryParse(value, out int recipeNum) && recipeNum >= 0 && recipeNum <= 4)
             {
-                RecipeText = recipeNum switch
-                {
-                    0 => "Receita 1",
-                    1 => "Receita 2",
-                    2 => "Receita 3",
-                    3 => "Receita 4",
-                    4 => "Receita 5",
-                    _ => $"Receita {recipeNum + 1}"
-                };
+                RecipeText = _recipesConfig?.Recipes[recipeNum]?.Name ?? $"Receita {recipeNum + 1}";
             }
             else
             {
@@ -243,10 +262,16 @@ namespace UAUIngleza_plc
 
             try
             {
+                string recipeName = _recipesConfig?.Recipes[recipeNumber]?.Name ?? $"Receita {recipeNumber + 1}";
+                Console.WriteLine($"📋 Escrevendo {recipeName} (valor {recipeNumber}) em {RecipeAddress}...");
+                
                 await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
+                
+                Console.WriteLine($"✅ {recipeName} escrita com sucesso!");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Erro ao escrever receita: {ex.Message}");
                 await DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
             }
             finally
@@ -255,22 +280,29 @@ namespace UAUIngleza_plc
             }
         }
 
-        private async void OnRecipeClicked(object sender, EventArgs e)
+        private async void OnRecipe1Clicked(object? sender, EventArgs e)
         {
-            try
-            {
-                if (sender is Button botao)
-                {
-                    if (int.TryParse(botao.CommandParameter?.ToString(), out int numero))
-                    {
-                        await WriteRecipeToPLC(numero);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Erro", $"Erro ao processar receita: {ex.Message}", "OK");
-            }
+            await WriteRecipeToPLC(0);
+        }
+
+        private async void OnRecipe2Clicked(object? sender, EventArgs e)
+        {
+            await WriteRecipeToPLC(1);
+        }
+
+        private async void OnRecipe3Clicked(object? sender, EventArgs e)
+        {
+            await WriteRecipeToPLC(2);
+        }
+
+        private async void OnRecipe4Clicked(object? sender, EventArgs e)
+        {
+            await WriteRecipeToPLC(3);
+        }
+
+        private async void OnRecipe5Clicked(object? sender, EventArgs e)
+        {
+            await WriteRecipeToPLC(4);
         }
 
         private void OnMenuClicked(object? sender, EventArgs e)

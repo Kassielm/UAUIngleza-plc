@@ -12,9 +12,10 @@ namespace UAUIngleza_plc
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly IPLCService _plcService;
+        private readonly IStorageService _storageService;
         private string _connectionStatus = "🔄 Verificando conexão...";
         private string _recipeValue = "---";
-        private string _recipeText = "Nenhuma receita selecionada";
+        private string _recipeText = "Nenhuma receita";
         private bool _isConnected = false;
         private bool _isProcessing = false;
 
@@ -95,12 +96,14 @@ namespace UAUIngleza_plc
         {
             InitializeComponent();
             _plcService = plcService;
+            _storageService = storageService;
             BindingContext = this;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
+            await LoadCameraConfiguration();
             SubscribeToConnectionStatus();
             SubscribeToBitChanges();
         }
@@ -109,6 +112,23 @@ namespace UAUIngleza_plc
         {
             base.OnDisappearing();
             _disposables.Clear();
+        }
+
+        private async Task LoadCameraConfiguration()
+        {
+            try
+            {
+                var config = await _storageService.GetConfigAsync();
+
+                if (config != null && !string.IsNullOrEmpty(config.CameraIp))
+                {
+                    CameraWebView.Source = config.CameraIp;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao carregar configuração da câmera: {ex.Message}");
+            }
         }
 
         private void SubscribeToConnectionStatus()
@@ -123,22 +143,19 @@ namespace UAUIngleza_plc
                         {
                             if (state == ConnectionState.Connected)
                             {
-                                ConnectionStatus = "🟢 PLC ONLINE";
+                                ConnectionStatus = "ONLINE";
                                 IsConnected = true;
-                                Console.WriteLine("✅ MainPage: PLC conectado!");
                             }
                             else
                             {
-                                ConnectionStatus = "🔴 PLC OFFLINE";
+                                ConnectionStatus = "OFFLINE";
                                 IsConnected = false;
                                 RecipeValue = "---";
-                                Console.WriteLine("❌ MainPage: PLC desconectado!");
                             }
                         },
                         error =>
                         {
-                            Console.WriteLine($"❌ Erro ao monitorar status: {error.Message}");
-                            ConnectionStatus = "⚠️ ERRO NO STATUS";
+                            ConnectionStatus = "ERRO NO STATUS";
                             IsConnected = false;
                         });
 
@@ -146,7 +163,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao subscrever status de conexão: {ex.Message}");
+                Console.WriteLine($"Erro ao subscrever status de conexão: {ex.Message}");
             }
         }
 
@@ -166,7 +183,6 @@ namespace UAUIngleza_plc
                             TransmissionMode.OnChange)
                             .Catch<short, Exception>(ex =>
                             {
-                                Console.WriteLine($"⚠️ Erro ao ler {RecipeAddress}: {ex.Message}");
                                 return Observable.Return<short>(0);
                             });
                     })
@@ -175,11 +191,9 @@ namespace UAUIngleza_plc
                         value =>
                         {
                             RecipeValue = value.ToString();
-                            Console.WriteLine($"📊 Valor alterado em {RecipeAddress}: {value}");
                         },
                         error =>
                         {
-                            Console.WriteLine($"❌ Erro na notificação: {error.Message}");
                             RecipeValue = "ERRO";
                         });
 
@@ -187,7 +201,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao subscrever mudanças do bit: {ex.Message}");
+                Console.WriteLine($"Erro ao subscrever mudanças do bit: {ex.Message}");
             }
         }
 
@@ -195,7 +209,7 @@ namespace UAUIngleza_plc
         {
             if (value == "---" || value == "ERRO")
             {
-                RecipeText = "Nenhuma receita selecionada";
+                RecipeText = "Nenhuma receita";
                 return;
             }
 
@@ -203,77 +217,17 @@ namespace UAUIngleza_plc
             {
                 RecipeText = recipeNum switch
                 {
-                    0 => "📋 Receita 1 Ativa",
-                    1 => "📋 Receita 2 Ativa",
-                    2 => "📋 Receita 3 Ativa",
-                    3 => "📋 Receita 4 Ativa",
-                    4 => "📋 Receita 5 Ativa",
-                    _ => $"📋 Receita desconhecida ({recipeNum})"
+                    0 => "Receita 1",
+                    1 => "Receita 2",
+                    2 => "Receita 3",
+                    3 => "Receita 4",
+                    4 => "Receita 5",
+                    _ => $"Receita {recipeNum + 1}"
                 };
             }
             else
             {
-                RecipeText = "Valor inválido";
-            }
-        }
-
-        private async void OnSetBitClicked(object? sender, EventArgs e)
-        {
-            if (!CanInteract)
-            {
-                await DisplayAlert("Aviso", "PLC não está conectado!", "OK");
-                return;
-            }
-
-            IsProcessing = true;
-
-            try
-            {
-                Console.WriteLine($"⬆️ Setando bit em {RecipeAddress} para 1...");
-                
-                await _plcService.Plc!.SetValue<short>(RecipeAddress, 1);
-                
-                Console.WriteLine("✅ Bit setado com sucesso!");
-                await DisplayAlert("Sucesso", "Bit setado para 1", "OK");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro ao setar bit: {ex.Message}");
-                await DisplayAlert("Erro", $"Erro ao setar bit: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsProcessing = false;
-            }
-        }
-
-        private async void OnResetBitClicked(object? sender, EventArgs e)
-        {
-            if (!CanInteract)
-            {
-                await DisplayAlert("Aviso", "PLC não está conectado!", "OK");
-                return;
-            }
-
-            IsProcessing = true;
-
-            try
-            {
-                Console.WriteLine($"⬇️ Resetando bit em {RecipeAddress} para 0...");
-                
-                await _plcService.Plc!.SetValue<short>(RecipeAddress, 0);
-                
-                Console.WriteLine("✅ Bit resetado com sucesso!");
-                await DisplayAlert("Sucesso", "Bit resetado para 0", "OK");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro ao resetar bit: {ex.Message}");
-                await DisplayAlert("Erro", $"Erro ao resetar bit: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsProcessing = false;
+                RecipeText = "Inválido";
             }
         }
 
@@ -289,17 +243,10 @@ namespace UAUIngleza_plc
 
             try
             {
-                Console.WriteLine($"📋 Escrevendo Receita {recipeNumber + 1} (valor {recipeNumber}) em {RecipeAddress}...");
-                
-                // Usa SetValue do Sharp7.Rx diretamente
                 await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
-                
-                Console.WriteLine($"✅ Receita {recipeNumber + 1} escrita com sucesso! Valor: {recipeNumber}");
-                await DisplayAlert("Sucesso", $"Receita {recipeNumber + 1} ativada!", "OK");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao escrever receita {recipeNumber + 1}: {ex.Message}");
                 await DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
             }
             finally

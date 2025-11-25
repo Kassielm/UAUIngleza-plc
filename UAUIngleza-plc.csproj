@@ -75,10 +75,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Pages\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <MauiXaml Update="Styles\CameraStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

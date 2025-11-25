@@ -1,19 +1,17 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="UAUIngleza_plc.Pages.CameraPage"
-             Title="Câmera">
+             x:Class="UAUIngleza_plc.MainPage"
+             Shell.FlyoutBehavior="Flyout"
+             Title="Camera">
 
     <!-- Layout principal: Grid com 2 colunas -->
     <Grid ColumnSpacing="0">
         <Grid.ColumnDefinitions>
-            <!-- WebView: 80% da tela (4*) -->
             <ColumnDefinition Width="4*" />
-            <!-- Menu lateral: 20% da tela (1*) -->
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
-        <!-- WebView da Câmera (80%) -->
         <Border Grid.Column="0"
                 StrokeThickness="0">
             <WebView x:Name="CameraWebView"
@@ -22,12 +20,11 @@
                      BackgroundColor="Black" />
         </Border>
 
-        <!-- Menu Lateral (20%) -->
         <Border Grid.Column="1"
                 Background="#1a1a1a"
                 StrokeThickness="2"
                 Stroke="#2a2a2a">
-            
+
             <ScrollView>
                 <VerticalStackLayout Spacing="12"
                                      Padding="12"
@@ -52,7 +49,7 @@
                                    FontAttributes="Bold"
                                    TextColor="#888888"
                                    HorizontalOptions="Center" />
-                            
+
                             <!-- Indicador Visual (Bolinha) -->
                             <Border Grid.Row="1"
                                     WidthRequest="24"
@@ -60,10 +57,9 @@
                                     StrokeThickness="2"
                                     Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                     StrokeShape="RoundRectangle 12"
-                                    Background="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
                                     HorizontalOptions="Center">
                                 <Border.Shadow>
-                                    <Shadow Brush="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+                                    <Shadow
                                             Radius="10"
                                             Opacity="0.8" />
                                 </Border.Shadow>

@@ -20,7 +20,7 @@ namespace UAUIngleza_plc
         private bool _isProcessing = false;
 
         // Endereço onde as receitas serão escritas
-        private const string RecipeAddress = "DB1.DBW0";
+        private const string RecipeAddress = "DB1.Int0";
 
         public string ConnectionStatus
         {

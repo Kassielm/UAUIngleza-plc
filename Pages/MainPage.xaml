@@ -5,16 +5,12 @@
              Shell.FlyoutBehavior="Flyout"
              Title="UAU Ingleza">
 
-    <!-- Layout principal: Grid com 2 colunas -->
     <Grid ColumnSpacing="0">
         <Grid.ColumnDefinitions>
-            <!-- WebView: 80% da tela (4*) -->
             <ColumnDefinition Width="4*" />
-            <!-- Menu lateral: 20% da tela (1*) -->
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
-        <!-- WebView da Câmera (80%) -->
         <Border Grid.Column="0"
                 StrokeThickness="0">
             <WebView x:Name="CameraWebView"
@@ -23,7 +19,6 @@
                      BackgroundColor="Black" />
         </Border>
 
-        <!-- Menu Lateral (20%) -->
         <Border Grid.Column="1"
                 Background="#1a1a1a"
                 StrokeThickness="2"
@@ -31,9 +26,7 @@
             
             <Grid RowSpacing="0" Padding="10">
                 <Grid.RowDefinitions>
-                    <!-- Botões de Receitas -->
                     <RowDefinition Height="*" />
-                    <!-- Status e Receita Selecionada -->
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -136,18 +129,15 @@
                     </VerticalStackLayout>
                 </ScrollView>
 
-                <!-- Status e Receita Selecionada (Parte inferior) -->
                 <VerticalStackLayout Grid.Row="1" 
                                      Spacing="8" 
                                      Margin="0,10,0,0">
                     
-                    <!-- Separador -->
                     <BoxView HeightRequest="1"
                              Color="#3a3a3a"
                              HorizontalOptions="Fill"
                              Margin="0,0,0,8" />
 
-                    <!-- Status de Conexão (Pequeno) -->
                     <Border Background="#2a2a2a"
                             Padding="8"
                             StrokeThickness="1"
@@ -159,7 +149,6 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Bolinha de Status -->
                             <Border Grid.Column="0"
                                     WidthRequest="16"
                                     HeightRequest="16"
@@ -184,7 +173,6 @@
                         </Grid>
                     </Border>
 
-                    <!-- Receita Selecionada -->
                     <Border Background="#2a2a2a"
                             Padding="12"
                             StrokeThickness="1"

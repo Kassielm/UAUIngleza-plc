@@ -75,9 +75,37 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Settings\SPlc.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SPlc.settings</DependentUpon>
+	  </Compile>
+	  <Compile Update="Settings\SPlcAddresses.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SPlcAddresses.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Styles\CameraStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Settings\SPlc.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>SPlc.Designer.cs</LastGenOutput>
+	  </None>
+	  <None Update="Settings\SPlcAddresses.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>SPlcAddresses.Designer.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Types\" />
 	</ItemGroup>
 
 </Project>

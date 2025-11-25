@@ -45,36 +45,10 @@
     </FlyoutItem>
     
     <!-- Configuração das receitas -->
-    <FlyoutItem Tittle="Receitas">
+    <FlyoutItem Title="Receitas">
         <ShellContent
             Title="Receitas"
             ContentTemplate="{DataTemplate pages:ReceitasPage}"
             Route="ReceitasPage" />
     </FlyoutItem>
-                
-    <!-- Separador -->
-    <MenuItem Text="───────────────" IsEnabled="False" />
-
-    <!-- Receitas -->
-    <FlyoutItem Title="Receita 1" Icon="recipe.png">
-        <ShellContent
-            Title="Receita 1"
-            ContentTemplate="{DataTemplate pages:Receita1Page}"
-            Route="Receita1Page" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Receita 2" Icon="recipe.png">
-        <ShellContent
-            Title="Receita 2"
-            ContentTemplate="{DataTemplate pages:Receita2Page}"
-            Route="Receita2Page" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Receita 3" Icon="recipe.png">
-        <ShellContent
-            Title="Receita 3"
-            ContentTemplate="{DataTemplate pages:Receita3Page}"
-            Route="Receita3Page" />
-    </FlyoutItem>
-
 </Shell>

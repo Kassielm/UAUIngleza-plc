@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using Sharp7.Rx.Enums;
+using System.ComponentModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using UAUIngleza_plc.Models;
 using UAUIngleza_plc.Services;
@@ -9,7 +12,7 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
 {
     private readonly IStorageService _storageService;
     private readonly IPLCService _plcService;
-
+    private CompositeDisposable _disposables = new CompositeDisposable();
     private string _ipAddress = "";
     private int _rack = 0;
     private int _slot = 0;
@@ -180,14 +183,7 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
             IsConnecting = true;
             StatusMessage = "🔄 Conectando ao PLC...";
 
-            var config = new Models.SystemConfiguration
-            {
-                IpAddress = IpAddress,
-                Rack = Rack,
-                Slot = Slot
-            };
-
-            bool connected = await _plcService.ConnectAsync(config);
+            bool connected = await _plcService.ConnectAsync();
 
             if (connected)
             {
@@ -214,6 +210,7 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
     {
         try
         {
+            _plcService.Disconnect();
             IsConnected = false;
             StatusMessage = "🔌 Desconectado do PLC.";
         }
@@ -237,6 +234,53 @@ public partial class ConfiguracoesPage : ContentPage, INotifyPropertyChanged
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+   protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        CheckStatus();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _disposables.Clear();
+    }
+
+    public void CheckStatus()
+    {
+        try
+        {
+            if (_plcService.Plc == null) return;
+
+            var subConexao = _plcService.Plc.ConnectionState
+                .DistinctUntilChanged()
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(state =>
+                {
+                    ChangeStyleConnection(state);
+                });
+
+            _disposables.Add(subConexao);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao subscrever tags: {ex.Message}");
+        }
+    }
+
+    private void ChangeStyleConnection(ConnectionState estado)
+    {
+        if (estado == ConnectionState.Connected)
+        {
+            StatusBorder.BackgroundColor = Colors.Green;
+            StatusLabel.Text = "PLC ONLINE ✅";
+        }
+        else
+        {
+            StatusBorder.BackgroundColor = Colors.Red;
+            StatusLabel.Text = "PLC OFFLINE ❌";
+        }
     }
 }
 

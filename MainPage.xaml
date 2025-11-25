@@ -11,7 +11,7 @@
                 Spacing="25">
 
                 <Label
-                    Text="{Binding plcteste}"
+                    x:Name="Bit"
                     Style="{StaticResource Headline}"
                     SemanticProperties.HeadingLevel="Level1" />
 
@@ -23,14 +23,14 @@
 
                 <Button
                     x:Name="CounterBtn"
-                    Text="Click me" 
+                    Text="Setar bit" 
                     SemanticProperties.Hint="Counts the number of times you click"
                     Clicked="Setbit"
                     HorizontalOptions="Fill" />
 
                 <Button
                     x:Name="ResetBtn"
-                    Text="Click me" 
+                    Text="Reset bit" 
                     SemanticProperties.Hint="Counts the number of times you click"
                     Clicked="Resetbit"
                     HorizontalOptions="Fill" />

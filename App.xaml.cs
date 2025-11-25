@@ -6,29 +6,30 @@ namespace UAUIngleza_plc
 {
     public partial class App : Application
     {
-        [Inject] private PLCService _plcService { get; set; } = default!;
+        private IPLCService _plcService;
+
         public App(IPLCService plcService, IStorageService storageService)
         {
             InitializeComponent();
+            _plcService = plcService;
         }
 
         protected override async void OnStart()
         {
             base.OnStart();
-            _plcService.ConnectAsync();
+            try
+            {
+                _plcService.ConnectAsync().Wait(3000);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("deu ruim", ex);
+            }
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
             return new Window(new AppShell());
-        }
-
-        private void CheckStatus()
-        {
-            try
-            {
-                _plcService.
-            }
         }
     }
 }

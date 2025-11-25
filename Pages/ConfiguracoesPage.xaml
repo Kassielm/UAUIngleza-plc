@@ -70,7 +70,7 @@
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
 
-            <Border Padding="15" 
+            <Border Padding="15"
                     Margin="0,10,0,0"
                     BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
                     <Label Text="{Binding StatusMessage}" 
@@ -79,11 +79,13 @@
                        LineBreakMode="WordWrap" />
             </Border>
 
-            <Border Padding="15" 
+            <Border Padding="15"
+                    x:Name="StatusBorder"
                     Margin="0,10,0,0"
                     BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
                     <Label Text="{Binding StatusConnection}"
                        FontSize="14"
+                       x:Name="StatusLabel"
                        TextColor="{AppThemeBinding Light=#555, Dark=#BBB}"
                        LineBreakMode="WordWrap" />
             </Border>

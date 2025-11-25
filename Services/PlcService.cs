@@ -7,7 +7,7 @@ namespace UAUIngleza_plc.Services
     public interface IPLCService
     {
         Sharp7Plc Plc { get; }
-        Task ConnectAsync();
+        Task<bool> ConnectAsync();
         void Disconnect();
     }
     public class PLCService : IPLCService
@@ -24,7 +24,7 @@ namespace UAUIngleza_plc.Services
             Plc = new Sharp7Plc("127.0.0.1", 0, 0);
         }
 
-        public async Task ConnectAsync()
+        public async Task<bool> ConnectAsync()
         {
             try
             {
@@ -41,15 +41,18 @@ namespace UAUIngleza_plc.Services
                     await Plc.InitializeConnection();
 
                     Console.WriteLine("✅ Conexão Inicializada!");
+                    return true;
                 }
                 else
                 {
                     Console.WriteLine("⚠️ Nenhuma configuração encontrada no Storage.");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"❌ Exceção ao conectar PLC: {ex.Message}");
+                return false;
             }
         }
 

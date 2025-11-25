@@ -16,6 +16,7 @@ namespace UAUIngleza_plc.Services
         void Disconnect();
         Task StartAutoReconnect();
         void StopAutoReconnect();
+
     }
 
     public class PLCService : IPLCService, IDisposable
@@ -191,6 +192,19 @@ namespace UAUIngleza_plc.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Erro ao definir valor INT no PLC: {ex.Message}");
+            }
+        }
+
+        public async Task<short?> GetIntBit(string address)
+        {
+            try
+            {
+                return await Plc.GetValue<short>(address);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao obter valor INT do PLC: {ex.Message}");
+                return null;
             }
         }
 

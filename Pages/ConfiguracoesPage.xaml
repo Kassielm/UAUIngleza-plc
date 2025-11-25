@@ -99,15 +99,6 @@
                         Padding="15,12"
                         CornerRadius="8"
                         FontSize="16" />
-
-                <Button Text="🔗 Conectar ao PLC" 
-                        Clicked="OnConnectClicked"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        Padding="15,12"
-                        CornerRadius="8"
-                        FontSize="16" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

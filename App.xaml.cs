@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using UAUIngleza_plc.Services;
+﻿using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc
 {
@@ -28,7 +26,6 @@ namespace UAUIngleza_plc
             {
                 try
                 {
-                    Console.WriteLine("🚀 Iniciando conexão automática com o PLC...");
                     await _plcService.StartAutoReconnect();
                 }
                 catch (Exception ex)
@@ -41,14 +38,11 @@ namespace UAUIngleza_plc
         protected override void OnSleep()
         {
             base.OnSleep();
-            Console.WriteLine("😴 Aplicação entrando em modo sleep");
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-            Console.WriteLine("👀 Aplicação retomada");
-            
             if (!_plcService.IsConnected)
             {
                 _ = Task.Run(async () =>

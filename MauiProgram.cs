@@ -20,6 +20,7 @@ namespace UAUIngleza_plc
             builder.Services.AddSingleton<IStorageService, StorageService>();
             builder.Services.AddSingleton<IPLCService, PLCService>();
             builder.Services.AddSingleton<ConfiguracoesPage>();
+            builder.Services.AddSingleton<CameraPage>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

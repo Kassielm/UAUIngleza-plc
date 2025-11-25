@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Pages;
 using UAUIngleza_plc.Services;
 
@@ -18,9 +17,15 @@ namespace UAUIngleza_plc
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            // Serviços
             builder.Services.AddSingleton<IStorageService, StorageService>();
-            builder.Services.AddSingleton<IPlcService, PlcService>();
+            builder.Services.AddSingleton<IPLCService, PLCService>();
+            
+            // Páginas
+            builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<ConfiguracoesPage>();
+            builder.Services.AddSingleton<CameraPage>();
+            
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

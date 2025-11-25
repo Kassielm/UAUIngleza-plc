@@ -1,15 +1,50 @@
-﻿using System.Reactive.Disposables;
-using UAUIngleza_plc.Devices.Plc;
+﻿using Sharp7.Rx;
+using Sharp7.Rx.Enums;
+using System.ComponentModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using UAUIngleza_plc.Services;
+using UAUIngleza_plc.Settings;
+
 
 namespace UAUIngleza_plc
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly Plc _plc;
-        private readonly PlcService _plcService;
+        private readonly IPLCService _plcService;
+        private string _connectionStatus = "🔄 Verificando conexão...";
+        private string _bitValue = "---";
         private bool _isConnected = false;
+        private bool _isProcessing = false;
+
+        public string ConnectionStatus
+        {
+            get => _connectionStatus;
+            set
+            {
+                if (_connectionStatus != value)
+                {
+                    _connectionStatus = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string BitValue
+        {
+            get => _bitValue;
+            set
+            {
+                if (_bitValue != value)
+                {
+                    _bitValue = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public bool IsConnected
         {
             get => _isConnected;
@@ -19,90 +54,95 @@ namespace UAUIngleza_plc
                 {
                     _isConnected = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanInteract));
                 }
             }
         }
-        public MainPage()
+
+        public bool IsProcessing
+        {
+            get => _isProcessing;
+            set
+            {
+                if (_isProcessing != value)
+                {
+                    _isProcessing = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CanInteract));
+                }
+            }
+        }
+
+        public bool CanInteract => IsConnected && !IsProcessing;
+
+        public MainPage(IPLCService plcService, IStorageService storageService)
         {
             InitializeComponent();
-            _plc = new Plc();
-            _plcService = new PlcService(_plc);
-
-            InitializePlc();
+            _plcService = plcService;
+            BindingContext = this;
         }
 
-        private void InitializePlc()
+        protected override void OnAppearing()
         {
-            Task.Run(async () =>
-            {
-                if (!await ConnectPlc())
-                    Console.WriteLine("Erro ao conectar com o PLC.");
-            })
-                .ContinueWith(async t =>
-                {
-                    if (t.IsCompleted)
-                        if (await IsPlcConnected())
-                            Console.WriteLine("✅ PLC conectado!");
-                        else
-                            Console.WriteLine("❌ PLC desconectado!");
-                });
+            base.OnAppearing();
+            SubscribeToConnectionStatus();
         }
 
-        private async Task<bool> ConnectPlc() => await _plcService.Connect();
-        private async Task<bool> IsPlcConnected() => await _plc.CheckConnection();
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            _disposables.Clear();
+        }
 
-        //    protected override void OnAppearing()
-        //    {
-        //        base.OnAppearing();
-        //        SubscribeToConnectionStatus();
-        //    }
+        private void SubscribeToConnectionStatus()
+        {
+            try
+            {
+                // Observable reativo que escuta mudanças no status de conexão
+                var connectionSubscription = _plcService.ConnectionStatus
+                    .DistinctUntilChanged()
+                    .ObserveOn(SynchronizationContext.Current!)
+                    .Subscribe(
+                        state =>
+                        {
+                            if (state == ConnectionState.Connected)
+                            {
+                                ConnectionStatus = "🟢 PLC ONLINE";
+                                IsConnected = true;
+                                Console.WriteLine("✅ MainPage: PLC conectado!");
+                            }
+                            else
+                            {
+                                ConnectionStatus = "🔴 PLC OFFLINE";
+                                IsConnected = false;
+                                BitValue = "---";
+                                Console.WriteLine("❌ MainPage: PLC desconectado!");
+                            }
+                        },
+                        error =>
+                        {
+                            Console.WriteLine($"❌ Erro ao monitorar status: {error.Message}");
+                            ConnectionStatus = "⚠️ ERRO NO STATUS";
+                            IsConnected = false;
+                        });
 
-        //    protected override void OnDisappearing()
-        //    {
-        //        base.OnDisappearing();
-        //        _disposables.Clear();
-        //    }
+                _disposables.Add(connectionSubscription);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao subscrever status de conexão: {ex.Message}");
+            }
+        }
+        private void OnMenuClicked(object? sender, EventArgs e)
+        {
+            Shell.Current.FlyoutIsPresented = !Shell.Current.FlyoutIsPresented;
+        }
 
-        //    private void SubscribeToConnectionStatus()
-        //    {
-        //        try
-        //        {
-        //            var connectionSubscription = _plcService.ConnectionStatus
-        //                .DistinctUntilChanged()
-        //                .ObserveOn(SynchronizationContext.Current!)
-        //                .Subscribe(
-        //                    state =>
-        //                    {
-        //                        if (state == ConnectionState.Connected)
-        //                        {
-        //                            IsConnected = true;
-        //                            Console.WriteLine("✅ PLC conectado!");
-        //                        }
-        //                        else
-        //                        {
-        //                            IsConnected = false;
-        //                            Console.WriteLine("❌ PLC desconectado!");
-        //                        }
-        //                    },
-        //                    error =>
-        //                    {
-        //                        Console.WriteLine($"❌ Erro ao monitorar status: {error.Message}");
-        //                        IsConnected = false;
-        //                    });
+        public new event PropertyChangedEventHandler? PropertyChanged;
 
-        //            _disposables.Add(connectionSubscription);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine($"❌ Erro ao subscrever status de conexão: {ex.Message}");
-        //        }
-        //    }
-
-        //    public new event PropertyChangedEventHandler? PropertyChanged;
-
-        //    protected void OnPropertyChanged([CallerMemberName] string? name = null)
-        //    {
-        //        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        //    }
-        //}
-    //}
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+    }
+}

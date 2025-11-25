@@ -31,7 +31,8 @@ namespace UAUIngleza_plc.Devices.Plc
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao conectar com o PLC. " + ex.Message);
+                Console.WriteLine($"❌ Erro ao conectar com o PLC: {ex.Message}");
+                return false;
             }
         }
 
@@ -39,36 +40,134 @@ namespace UAUIngleza_plc.Devices.Plc
         {
             try
             {
+                Console.WriteLine($"🔄 Conectando ao PLC {Ip}...");
+                
                 await Client.InitializeConnection();
-                Thread.Sleep(1000);
-                return await CheckConnection();
+                
+                // Aguarda o estado de conexão usando Observable (melhor que Thread.Sleep)
+                var isConnected = await WaitForConnectionStatus(TimeSpan.FromSeconds(5));
+                
+                if (isConnected)
+                {
+                    Console.WriteLine("✅ Conectado ao PLC com sucesso!");
+                    SubscribeToConnectionChanges();
+                }
+                else
+                {
+                    Console.WriteLine("❌ Timeout ao aguardar conexão com o PLC");
+                }
+                
+                return isConnected;
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao conectar com o PLC." + ex);
+                Console.WriteLine($"❌ Erro ao conectar com o PLC: {ex.Message}");
+                return false;
             }
         }
 
-        public async Task<bool> CheckConnection()
+        /// <summary>
+        /// Aguarda até que o PLC esteja conectado ou timeout
+        /// </summary>
+        private async Task<bool> WaitForConnectionStatus(TimeSpan timeout)
         {
-            Sharp7.Rx.Enums.ConnectionState connection = await Client
-                .ConnectionState.Timeout(TimeSpan.FromSeconds(5))
-                .FirstAsync();
             try
             {
-                await Client
-                    .ConnectionState.Where(state => state == Sharp7.Rx.Enums.ConnectionState.Connected)
-                    .Do(ConnectionState =>
-                        Console.WriteLine("Conectado ao PLC")
-                    )
-                    .Timeout(TimeSpan.FromSeconds(5))
+                var state = await Client.ConnectionState
+                    .Where(s => s == ConnectionState.Connected)
+                    .Timeout(timeout)
                     .FirstAsync();
-                return true;
+                
+                return state == ConnectionState.Connected;
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("⏱️ Timeout ao aguardar conexão");
+                return false;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Erro ao verificar status: {ex.Message}");
                 return false;
-                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retorna o status atual da conexão de forma síncrona
+        /// </summary>
+        public async Task<bool> GetPlcStatus()
+        {
+            try
+            {
+                var currentState = await Client.ConnectionState
+                    .FirstAsync()
+                    .Timeout(TimeSpan.FromSeconds(2));
+                
+                return currentState == ConnectionState.Connected;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao obter status do PLC: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Subscreve às mudanças de estado de conexão para monitoramento contínuo
+        /// </summary>
+        private void SubscribeToConnectionChanges()
+        {
+            try
+            {
+                _connectionSubscription?.Dispose();
+                
+                _connectionSubscription = Client.ConnectionState
+                    .DistinctUntilChanged()
+                    .Subscribe(
+                        state =>
+                        {
+                            if (state == ConnectionState.Connected)
+                            {
+                                Console.WriteLine("🟢 PLC CONECTADO");
+                            }
+                            else
+                            {
+                                Console.WriteLine("🔴 PLC DESCONECTADO");
+                            }
+                        },
+                        error =>
+                        {
+                            Console.WriteLine($"❌ Erro no monitoramento de conexão: {error.Message}");
+                        });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao subscrever mudanças de conexão: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Verifica se o PLC está conectado (método antigo mantido para compatibilidade)
+        /// </summary>
+        [Obsolete("Use GetPlcStatus() ou WaitForConnectionStatus() ao invés disso")]
+        public async void CheckConnection()
+        {
+            try
+            {
+                var state = await Client.ConnectionState
+                    .Where(s => s == ConnectionState.Connected)
+                    .Timeout(TimeSpan.FromSeconds(5))
+                    .FirstAsync();
+                
+                Console.WriteLine("✅ Conectado ao PLC");
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("⏱️ Timeout ao verificar conexão");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao verificar conexão: {ex.Message}");
             }
         }
 
@@ -82,25 +181,44 @@ namespace UAUIngleza_plc.Devices.Plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erro ao se inscrever no endereço do PLC. " + ex.Message);
+                Console.WriteLine($"❌ Erro ao se inscrever no endereço {address}: {ex.Message}");
                 return null;
             }
         }
 
         public async Task HandleFloats(string tag, float value)
         {
-            await Client.SetValue(tag, value);
+            try
+            {
+                await Client.SetValue(tag, value);
+                Console.WriteLine($"✅ Float escrito em {tag}: {value}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao escrever float em {tag}: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task HandleNumbers(string tag, int value)
         {
-            if (tag.Contains("DINT"))
+            try
             {
-                await Client.SetValue(tag, value * 1000);
+                if (tag.Contains("DINT"))
+                {
+                    await Client.SetValue(tag, value * 1000);
+                    Console.WriteLine($"✅ DINT escrito em {tag}: {value * 1000}");
+                }
+                else
+                {
+                    await Client.SetValue(tag, value);
+                    Console.WriteLine($"✅ INT escrito em {tag}: {value}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await Client.SetValue(tag, value);
+                Console.WriteLine($"❌ Erro ao escrever número em {tag}: {ex.Message}");
+                throw;
             }
         }
 
@@ -108,10 +226,13 @@ namespace UAUIngleza_plc.Devices.Plc
         {
             try
             {
-                return await Client.GetValue(tag);
+                var value = await Client.GetValue(tag);
+                Console.WriteLine($"📖 Lido de {tag}: {value}");
+                return value;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Erro ao ler a tag {tag}: {ex.Message}");
                 throw new Exception($"Erro ao ler a tag {tag} do PLC. " + ex.Message);
             }
         }
@@ -121,9 +242,11 @@ namespace UAUIngleza_plc.Devices.Plc
             try
             {
                 await HandleValue(tag, value);
+                Console.WriteLine($"✅ Valor '{value}' escrito em {tag}");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Erro ao escrever em {tag}: {ex.Message}");
                 throw new Exception($"Erro ao escrever a tag {tag} no PLC. " + ex.Message);
             }
         }
@@ -154,7 +277,24 @@ namespace UAUIngleza_plc.Devices.Plc
             }
             else
             {
-                throw new Exception("Parâmetro incorreto para tag");
+                throw new Exception($"Tipo de tag não suportado: {tag}");
+            }
+        }
+
+        /// <summary>
+        /// Desconecta e limpa recursos
+        /// </summary>
+        public void Disconnect()
+        {
+            try
+            {
+                _connectionSubscription?.Dispose();
+                Client?.Dispose();
+                Console.WriteLine("🔌 Desconectado do PLC");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Erro ao desconectar: {ex.Message}");
             }
         }
     }

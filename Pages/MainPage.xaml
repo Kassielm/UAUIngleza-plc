@@ -3,179 +3,237 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="UAUIngleza_plc.MainPage"
              Shell.FlyoutBehavior="Flyout"
-             Title="Camera">
+             Title="Teste PLC">
 
-    <!-- Layout principal: Grid com 2 colunas -->
-    <Grid ColumnSpacing="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30"
+            Spacing="30">
 
-        <Border Grid.Column="0"
-                StrokeThickness="0">
-            <WebView x:Name="CameraWebView"
-                     HorizontalOptions="FillAndExpand"
-                     VerticalOptions="FillAndExpand"
-                     BackgroundColor="Black" />
-        </Border>
+            <!-- Título -->
+            <Label
+                Text="🧪 Componente de Teste PLC"
+                Style="{StaticResource Headline}"
+                HorizontalOptions="Center"
+                SemanticProperties.HeadingLevel="Level1" />
 
-        <Border Grid.Column="1"
-                Background="#1a1a1a"
-                StrokeThickness="2"
-                Stroke="#2a2a2a">
-
-            <ScrollView>
-                <VerticalStackLayout Spacing="12"
-                                     Padding="12"
-                                     VerticalOptions="Start">
-
-                    <!-- Status do PLC -->
-                    <Border Background="#2a2a2a"
-                            Padding="12"
-                            StrokeThickness="1"
-                            Stroke="#3a3a3a"
-                            StrokeShape="RoundRectangle 10">
-                        <Grid RowSpacing="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <Label Grid.Row="0"
-                                   Text="STATUS PLC"
-                                   FontSize="10"
-                                   FontAttributes="Bold"
-                                   TextColor="#888888"
-                                   HorizontalOptions="Center" />
-
-                            <!-- Indicador Visual (Bolinha) -->
-                            <Border Grid.Row="1"
-                                    WidthRequest="24"
-                                    HeightRequest="24"
-                                    StrokeThickness="2"
-                                    Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-                                    StrokeShape="RoundRectangle 12"
-                                    HorizontalOptions="Center">
-                                <Border.Shadow>
-                                    <Shadow
-                                            Radius="10"
-                                            Opacity="0.8" />
-                                </Border.Shadow>
-                            </Border>
-
-                            <Label Grid.Row="2"
-                                   Text="{Binding IsConnected, Converter={StaticResource BoolToStatusTextConverter}}"
-                                   FontSize="11"
-                                   FontAttributes="Bold"
-                                   TextColor="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-                                   HorizontalOptions="Center" />
-                        </Grid>
-                    </Border>
-
-                    <!-- Separador -->
-                    <BoxView HeightRequest="1"
-                             Color="#3a3a3a"
-                             HorizontalOptions="Fill"
-                             Margin="0,8,0,8" />
-
-                    <!-- Título Receitas -->
-                    <Label Text="📋 RECEITAS"
-                           FontSize="12"
-                           FontAttributes="Bold"
-                           TextColor="#cccccc"
-                           HorizontalOptions="Center"
-                           Margin="0,0,0,5" />
-
-                    <!-- Botões de Receitas -->
-                    <Button Text="Receita 1"
-                            CommandParameter="1"
-                            Clicked="OnRecipeClicked"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Padding="10,0">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Primary}"
-                                    Radius="8"
-                                    Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
-
-                    <Button Text="Receita 2"
-                            CommandParameter="2"
-                            Clicked="OnRecipeClicked"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Padding="10,0">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Primary}"
-                                    Radius="8"
-                                    Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
-
-                    <Button Text="Receita 3"
-                            CommandParameter="3"
-                            Clicked="OnRecipeClicked"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Padding="10,0">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Primary}"
-                                    Radius="8"
-                                    Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
-
-                    <Button Text="Receita 4"
-                            CommandParameter="4"
-                            Clicked="OnRecipeClicked"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Padding="10,0">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Primary}"
-                                    Radius="8"
-                                    Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
-
-                    <Button Text="Receita 5"
-                            CommandParameter="5"
-                            Clicked="OnRecipeClicked"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            FontSize="12"
-                            FontAttributes="Bold"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Padding="10,0">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource Primary}"
-                                    Radius="8"
-                                    Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
-
+            <!-- Status de Conexão -->
+            <Border
+                Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+                StrokeThickness="3"
+                Background="{Binding IsConnected, Converter={StaticResource BoolToBackgroundConverter}}"
+                Padding="20"
+                StrokeShape="RoundRectangle 15"
+                HorizontalOptions="Fill">
+                <VerticalStackLayout Spacing="10">
+                    <Label
+                        Text="STATUS DA CONEXÃO"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        TextColor="White" />
+                    <Label
+                        Text="{Binding ConnectionStatus}"
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        TextColor="White" />
                 </VerticalStackLayout>
-            </ScrollView>
-        </Border>
-    </Grid>
+            </Border>
+
+            <!-- Separador -->
+            <BoxView
+                HeightRequest="1"
+                Color="{StaticResource Gray300}"
+                HorizontalOptions="Fill" />
+
+            <!-- Valor do Bit -->
+            <VerticalStackLayout Spacing="15">
+                <Label
+                    Text="VALOR MONITORADO (DB1.DBW0)"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    TextColor="{StaticResource Primary}" />
+                
+                <Border
+                    Stroke="{StaticResource Primary}"
+                    StrokeThickness="2"
+                    Background="{StaticResource Gray100}"
+                    Padding="30"
+                    StrokeShape="RoundRectangle 20"
+                    HorizontalOptions="Center"
+                    MinimumWidthRequest="200">
+                    <Label
+                        Text="{Binding BitValue}"
+                        FontSize="48"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        TextColor="{StaticResource Primary}" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Separador -->
+            <BoxView
+                HeightRequest="1"
+                Color="{StaticResource Gray300}"
+                HorizontalOptions="Fill"
+                Margin="0,10,0,10" />
+
+            <!-- Botões de Controle Básico -->
+            <VerticalStackLayout Spacing="15">
+                <Label
+                    Text="CONTROLES BÁSICOS"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    TextColor="{StaticResource Primary}" />
+
+                <Button
+                    Text="⬆️ SETAR BIT (1)"
+                    Clicked="OnSetBitClicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="#28a745"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HeightRequest="60"
+                    CornerRadius="15"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    Text="⬇️ RESETAR BIT (0)"
+                    Clicked="OnResetBitClicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="#dc3545"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HeightRequest="60"
+                    CornerRadius="15"
+                    HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+
+            <!-- Separador -->
+            <BoxView
+                HeightRequest="2"
+                Color="{StaticResource Gray300}"
+                HorizontalOptions="Fill"
+                Margin="0,10,0,10" />
+
+            <!-- Receitas -->
+            <VerticalStackLayout Spacing="15">
+                <Label
+                    Text="📋 RECEITAS"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    TextColor="{StaticResource Primary}" />
+
+                <Button
+                    Text="Receita 1"
+                    Clicked="OnRecipe1Clicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="55"
+                    CornerRadius="12"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    Text="Receita 2"
+                    Clicked="OnRecipe2Clicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="55"
+                    CornerRadius="12"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    Text="Receita 3"
+                    Clicked="OnRecipe3Clicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="55"
+                    CornerRadius="12"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    Text="Receita 4"
+                    Clicked="OnRecipe4Clicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="55"
+                    CornerRadius="12"
+                    HorizontalOptions="Fill" />
+
+                <Button
+                    Text="Receita 5"
+                    Clicked="OnRecipe5Clicked"
+                    IsEnabled="{Binding CanInteract}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    HeightRequest="55"
+                    CornerRadius="12"
+                    HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+
+            <!-- Informações -->
+            <Border
+                Stroke="{StaticResource Gray300}"
+                StrokeThickness="1"
+                Background="{StaticResource Gray100}"
+                Padding="15"
+                StrokeShape="RoundRectangle 10"
+                HorizontalOptions="Fill"
+                Margin="0,20,0,0">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="ℹ️ Informações"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource Primary}" />
+                    <Label
+                        Text="• Status muda automaticamente ao conectar/desconectar"
+                        FontSize="11"
+                        TextColor="{StaticResource Gray600}" />
+                    <Label
+                        Text="• Valor é atualizado em tempo real via Observable"
+                        FontSize="11"
+                        TextColor="{StaticResource Gray600}" />
+                    <Label
+                        Text="• Receitas escrevem valores nos endereços configurados"
+                        FontSize="11"
+                        TextColor="{StaticResource Gray600}" />
+                    <Label
+                        Text="• Configure endereços no arquivo PlcAddresses.cs"
+                        FontSize="11"
+                        TextColor="{StaticResource Gray600}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator
+                IsVisible="{Binding IsProcessing}"
+                IsRunning="{Binding IsProcessing}"
+                Color="{StaticResource Primary}"
+                HeightRequest="40" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
 </ContentPage>

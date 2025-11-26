@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="UAUIngleza_plc.Pages.ReceitasPage"
              Title="Receitas">
-    
-    <ScrollView>
-        <VerticalStackLayout Padding="20 20 20 100" Spacing="20">
+
+    <ScrollView Padding="20, 20, 20, 100">
+        <VerticalStackLayout Spacing="20">
 
             <Label Text="⚙️ Configuração de Receitas"
                    Style="{StaticResource Headline}"

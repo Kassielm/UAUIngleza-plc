@@ -21,19 +21,11 @@
     </Shell.FlyoutHeader>
 
     <!-- Item Principal -->
-    <FlyoutItem Title="Home" Icon="home.png">
-        <ShellContent
-            Title="Home"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage" />
-    </FlyoutItem>
-
-    <!-- Câmera -->
-    <FlyoutItem Title="Camera" Icon="camera.png">
+    <FlyoutItem Title="Camera" Icon="home.png">
         <ShellContent
             Title="Camera"
-            ContentTemplate="{DataTemplate pages:CameraPage}"
-            Route="CameraPage" />
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
     </FlyoutItem>
 
     <!-- Configurações -->

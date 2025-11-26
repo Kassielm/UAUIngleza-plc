@@ -26,7 +26,7 @@
                 StrokeThickness="2"
                 Stroke="#2a2a2a">
             
-            <Grid RowSpacing="0" Padding="10">
+            <Grid RowSpacing="0" Padding="10, 10, 10, 50">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
@@ -43,7 +43,7 @@
                                HorizontalOptions="Center"
                                Margin="0,0,0,10" />
 
-                        <Button Text="Receita 1"
+                        <Button Text="{Binding Recipe1Name}"
                                 Clicked="OnRecipe1Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
@@ -59,7 +59,7 @@
                             </Button.Shadow>
                         </Button>
 
-                        <Button Text="Receita 2"
+                        <Button Text="{Binding Recipe2Name}"
                                 Clicked="OnRecipe2Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
@@ -75,7 +75,7 @@
                             </Button.Shadow>
                         </Button>
 
-                        <Button Text="Receita 3"
+                        <Button Text="{Binding Recipe3Name}"
                                 Clicked="OnRecipe3Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
@@ -91,7 +91,7 @@
                             </Button.Shadow>
                         </Button>
 
-                        <Button Text="Receita 4"
+                        <Button Text="{Binding Recipe4Name}"
                                 Clicked="OnRecipe4Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
@@ -107,7 +107,7 @@
                             </Button.Shadow>
                         </Button>
 
-                        <Button Text="Receita 5"
+                        <Button Text="{Binding Recipe5Name}"
                                 Clicked="OnRecipe5Clicked"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
@@ -184,19 +184,12 @@
                                    FontAttributes="Bold"
                                    TextColor="#888888"
                                    HorizontalOptions="Center" />
-                            
+
                             <Label Text="{Binding RecipeValue}"
                                    FontSize="28"
                                    FontAttributes="Bold"
                                    HorizontalOptions="Center"
                                    TextColor="{StaticResource Primary}" />
-                            
-                            <Label Text="{Binding RecipeText}"
-                                   FontSize="10"
-                                   TextColor="#cccccc"
-                                   HorizontalOptions="Center"
-                                   LineBreakMode="WordWrap"
-                                   HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
                     </Border>
 

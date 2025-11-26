@@ -17,11 +17,80 @@ namespace UAUIngleza_plc
         private RecipesConfiguration _recipesConfig;
         private string _connectionStatus = "🔄 Verificando conexão...";
         private string _recipeValue = "---";
-        private string _recipeText = "Nenhuma receita";
         private bool _isConnected = false;
         private bool _isProcessing = false;
+        private string _recipe1Name = "Receita 1";
+        private string _recipe2Name = "Receita 2";
+        private string _recipe3Name = "Receita 3";
+        private string _recipe4Name = "Receita 4";
+        private string _recipe5Name = "Receita 5";
 
-        private const string RecipeAddress = "DB1.Int0";
+        private const string RecipeAddress = "DB1.DBW0";
+
+        public string Recipe1Name
+        {
+            get => _recipe1Name;
+            set
+            {
+                if (_recipe1Name != value)
+                {
+                    _recipe1Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Recipe2Name
+        {
+            get => _recipe2Name;
+            set
+            {
+                if (_recipe2Name != value)
+                {
+                    _recipe2Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Recipe3Name
+        {
+            get => _recipe3Name;
+            set
+            {
+                if (_recipe3Name != value)
+                {
+                    _recipe3Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Recipe4Name
+        {
+            get => _recipe4Name;
+            set
+            {
+                if (_recipe4Name != value)
+                {
+                    _recipe4Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Recipe5Name
+        {
+            get => _recipe5Name;
+            set
+            {
+                if (_recipe5Name != value)
+                {
+                    _recipe5Name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public string ConnectionStatus
         {
@@ -44,20 +113,6 @@ namespace UAUIngleza_plc
                 if (_recipeValue != value)
                 {
                     _recipeValue = value;
-                    OnPropertyChanged();
-                    UpdateRecipeText(value);
-                }
-            }
-        }
-
-        public string RecipeText
-        {
-            get => _recipeText;
-            set
-            {
-                if (_recipeText != value)
-                {
-                    _recipeText = value;
                     OnPropertyChanged();
                 }
             }
@@ -121,11 +176,16 @@ namespace UAUIngleza_plc
             try
             {
                 _recipesConfig = await _storageService.GetRecipesAsync();
-                Console.WriteLine("✅ Receitas carregadas do localStorage");
+                
+                Recipe1Name = _recipesConfig?.Recipes[0]?.Name ?? "Receita 1";
+                Recipe2Name = _recipesConfig?.Recipes[1]?.Name ?? "Receita 2";
+                Recipe3Name = _recipesConfig?.Recipes[2]?.Name ?? "Receita 3";
+                Recipe4Name = _recipesConfig?.Recipes[3]?.Name ?? "Receita 4";
+                Recipe5Name = _recipesConfig?.Recipes[4]?.Name ?? "Receita 5";                
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao carregar receitas: {ex.Message}");
+                Console.WriteLine($"Erro ao carregar receitas: {ex.Message}");
                 _recipesConfig = new RecipesConfiguration();
             }
         }
@@ -138,17 +198,16 @@ namespace UAUIngleza_plc
 
                 if (config != null && !string.IsNullOrEmpty(config.CameraIp))
                 {
-                    Console.WriteLine($"📹 Carregando câmera: {config.CameraIp}");
                     CameraWebView.Source = config.CameraIp;
                 }
                 else
                 {
-                    Console.WriteLine("⚠️ Nenhum IP de câmera configurado");
+                    Console.WriteLine("Nenhum IP de câmera configurado");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao carregar configuração da câmera: {ex.Message}");
+                Console.WriteLine($"Erro ao carregar configuração da câmera: {ex.Message}");
             }
         }
 
@@ -164,22 +223,22 @@ namespace UAUIngleza_plc
                         {
                             if (state == ConnectionState.Connected)
                             {
-                                ConnectionStatus = "🟢 PLC ONLINE";
+                                ConnectionStatus = "ONLINE";
                                 IsConnected = true;
-                                Console.WriteLine("✅ MainPage: PLC conectado!");
+                                Console.WriteLine("MainPage: PLC conectado!");
                             }
                             else
                             {
-                                ConnectionStatus = "🔴 PLC OFFLINE";
+                                ConnectionStatus = "OFFLINE";
                                 IsConnected = false;
                                 RecipeValue = "---";
-                                Console.WriteLine("❌ MainPage: PLC desconectado!");
+                                Console.WriteLine("MainPage: PLC desconectado!");
                             }
                         },
                         error =>
                         {
-                            Console.WriteLine($"❌ Erro ao monitorar status: {error.Message}");
-                            ConnectionStatus = "⚠️ ERRO NO STATUS";
+                            Console.WriteLine($"Erro ao monitorar status: {error.Message}");
+                            ConnectionStatus = "ERRO NO STATUS";
                             IsConnected = false;
                         });
 
@@ -187,7 +246,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao subscrever status de conexão: {ex.Message}");
+                Console.WriteLine($"Erro ao subscrever status de conexão: {ex.Message}");
             }
         }
 
@@ -207,7 +266,7 @@ namespace UAUIngleza_plc
                             TransmissionMode.OnChange)
                             .Catch<short, Exception>(ex =>
                             {
-                                Console.WriteLine($"⚠️ Erro ao ler {RecipeAddress}: {ex.Message}");
+                                Console.WriteLine($"⚠Erro ao ler {RecipeAddress}: {ex.Message}");
                                 return Observable.Return<short>(0);
                             });
                     })
@@ -216,11 +275,10 @@ namespace UAUIngleza_plc
                         value =>
                         {
                             RecipeValue = value.ToString();
-                            Console.WriteLine($"📊 Valor alterado em {RecipeAddress}: {value}");
                         },
                         error =>
                         {
-                            Console.WriteLine($"❌ Erro na notificação: {error.Message}");
+                            Console.WriteLine($"Erro na notificação: {error.Message}");
                             RecipeValue = "ERRO";
                         });
 
@@ -228,25 +286,7 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao subscrever mudanças do bit: {ex.Message}");
-            }
-        }
-
-        private void UpdateRecipeText(string value)
-        {
-            if (value == "---" || value == "ERRO")
-            {
-                RecipeText = "Nenhuma receita";
-                return;
-            }
-
-            if (int.TryParse(value, out int recipeNum) && recipeNum >= 0 && recipeNum <= 4)
-            {
-                RecipeText = _recipesConfig?.Recipes[recipeNum]?.Name ?? $"Receita {recipeNum + 1}";
-            }
-            else
-            {
-                RecipeText = "Inválido";
+                Console.WriteLine($"Erro ao subscrever mudanças do bit: {ex.Message}");
             }
         }
 

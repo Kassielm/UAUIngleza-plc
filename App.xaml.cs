@@ -30,7 +30,7 @@ namespace UAUIngleza_plc
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"⚠️ Erro ao iniciar conexão automática: {ex.Message}");
+                    Console.WriteLine($"Erro ao iniciar conexão automática: {ex.Message}");
                 }
             });
         }
@@ -53,7 +53,7 @@ namespace UAUIngleza_plc
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"⚠️ Erro ao reconectar após resume: {ex.Message}");
+                        Console.WriteLine($"Erro ao reconectar após resume: {ex.Message}");
                     }
                 });
             }

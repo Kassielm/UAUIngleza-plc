@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Sharp7.Rx;
+﻿using Sharp7.Rx;
 using Sharp7.Rx.Enums;
 using System.Diagnostics;
 using System.Reactive.Linq;

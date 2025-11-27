@@ -19,10 +19,9 @@
                        FontAttributes="Bold"
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
-                <Entry x:Name="IpEntry" 
-                       Text="{Binding IpAddress}" 
-                       Placeholder="192.168.1.100"
-                       Keyboard="Telephone"
+                <Entry x:Name="IpEntry"
+                       Placeholder="192.168.2.1"
+                       Keyboard="Url"
                        PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
                        TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
@@ -34,7 +33,7 @@
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
 
-                <Entry Text="{Binding Rack}" 
+                <Entry x:Name="RackEntry"
                        Placeholder="0"
                        Keyboard="Numeric"
                        PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
@@ -48,8 +47,8 @@
                        FontSize="14"
                        TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
 
-                <Entry Text="{Binding Slot}" 
-                       Placeholder="0"
+                <Entry x:Name="SlotEntry"
+                       Placeholder="1"
                        Keyboard="Numeric"
                        PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
                        TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
@@ -57,38 +56,18 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="🖥️ Endereço IP da câmera"
+                <Label Text="📹 Endereço IP da Câmera"
                        FontAttributes="Bold"
                        FontSize="14"
-                       TextColor="{AppThemeBinding Light=#333, Dark=#666}" />
+                       TextColor="{AppThemeBinding Light=#333, Dark=#DDD}" />
 
-                <Entry Text="{Binding CameraIp}"
-                       Placeholder="192.168.1.200:60000"
-                       Keyboard="Telephone"
-                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=666}"
+                <Entry x:Name="CameraEntry"
+                       Placeholder="http://192.168.0.101"
+                       Keyboard="Url"
+                       PlaceholderColor="{AppThemeBinding Light=#999, Dark=#666}"
                        TextColor="{AppThemeBinding Light=#000, Dark=#FFF}"
                        BackgroundColor="{AppThemeBinding Light=#FFF, Dark=#2a2a2a}"/>
             </VerticalStackLayout>
-
-            <Border Padding="15"
-                    Margin="0,10,0,0"
-                    BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
-                    <Label Text="{Binding StatusMessage}" 
-                       FontSize="14"
-                       TextColor="{AppThemeBinding Light=#555, Dark=#BBB}"
-                       LineBreakMode="WordWrap" />
-            </Border>
-
-            <Border Padding="15"
-                    x:Name="StatusBorder"
-                    Margin="0,10,0,0"
-                    BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#222}">
-                    <Label Text="{Binding StatusConnection}"
-                       FontSize="14"
-                       x:Name="StatusLabel"
-                       TextColor="{AppThemeBinding Light=#555, Dark=#BBB}"
-                       LineBreakMode="WordWrap" />
-            </Border>
 
             <VerticalStackLayout Spacing="12" Margin="0,20,0,0">
                 <Button Text="💾 Salvar Configuração" 

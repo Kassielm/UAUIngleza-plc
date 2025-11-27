@@ -25,7 +25,7 @@ namespace UAUIngleza_plc.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error saving configuration: {ex.Message}");
+                Debug.WriteLine($"Erro ao salvar configuração: {ex.Message}");
             }
         }
         
@@ -36,14 +36,14 @@ namespace UAUIngleza_plc.Services
                 var json = await SecureStorage.Default.GetAsync(ConfigKey);
                 if (string.IsNullOrEmpty(json))
                 {
-                    return null;
+                    return new Models.SystemConfiguration();
                 }
                 return JsonSerializer.Deserialize<Models.SystemConfiguration>(json);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error retrieving configuration: {ex.Message}");
-                return null;
+                Debug.WriteLine($"Erro ao buscar configuração: {ex.Message}");
+                return new Models.SystemConfiguration();
             }
         }
 
@@ -56,7 +56,7 @@ namespace UAUIngleza_plc.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error saving recipes: {ex.Message}");
+                Debug.WriteLine($"Erro ao salvar receitas: {ex.Message}");
             }
         }
 
@@ -73,7 +73,7 @@ namespace UAUIngleza_plc.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error retrieving recipes: {ex.Message}");
+                Debug.WriteLine($"Erro ao buscar receitas: {ex.Message}");
                 return new Models.RecipesConfiguration();
             }
         }

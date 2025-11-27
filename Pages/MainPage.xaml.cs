@@ -1,5 +1,4 @@
-﻿using Sharp7.Rx;
-using Sharp7.Rx.Enums;
+﻿using Sharp7.Rx.Enums;
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -185,7 +184,6 @@ namespace UAUIngleza_plc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar receitas: {ex.Message}");
                 _recipesConfig = new RecipesConfiguration();
             }
         }
@@ -198,7 +196,7 @@ namespace UAUIngleza_plc
 
                 if (config != null && !string.IsNullOrEmpty(config.CameraIp))
                 {
-                    CameraWebView.Source = config.CameraIp;
+                    CameraWebView.Source = ($"http://{config.CameraIp}:60000/api/v1/script_stream");
                 }
                 else
                 {
@@ -225,19 +223,16 @@ namespace UAUIngleza_plc
                             {
                                 ConnectionStatus = "ONLINE";
                                 IsConnected = true;
-                                Console.WriteLine("MainPage: PLC conectado!");
                             }
                             else
                             {
                                 ConnectionStatus = "OFFLINE";
                                 IsConnected = false;
                                 RecipeValue = "---";
-                                Console.WriteLine("MainPage: PLC desconectado!");
                             }
                         },
                         error =>
                         {
-                            Console.WriteLine($"Erro ao monitorar status: {error.Message}");
                             ConnectionStatus = "ERRO NO STATUS";
                             IsConnected = false;
                         });
@@ -303,15 +298,11 @@ namespace UAUIngleza_plc
             try
             {
                 string recipeName = _recipesConfig?.Recipes[recipeNumber]?.Name ?? $"Receita {recipeNumber + 1}";
-                Console.WriteLine($"📋 Escrevendo {recipeName} (valor {recipeNumber}) em {RecipeAddress}...");
                 
                 await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
-                
-                Console.WriteLine($"✅ {recipeName} escrita com sucesso!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao escrever receita: {ex.Message}");
                 await DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
             }
             finally

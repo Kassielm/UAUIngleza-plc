@@ -43,6 +43,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe1Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -63,6 +69,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe2Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -83,6 +95,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe3Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -103,6 +121,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe4Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -123,6 +147,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe5Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -143,6 +173,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe6Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -163,6 +199,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe7Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -183,6 +225,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe8Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -203,6 +251,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe9Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -223,6 +277,12 @@
                                Keyboard="Text"
                                FontSize="12"
                                MaxLength="30" />
+                        
+                        <Label Text="Quantidade de Garrafas:" FontSize="11" Margin="0,5,0,0" />
+                        <Entry x:Name="Recipe10Bottles"
+                               Keyboard="Numeric"
+                               FontSize="12"
+                               MaxLength="5" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>

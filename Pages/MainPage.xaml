@@ -44,8 +44,9 @@
                                Margin="0,0,0,10" />
 
                         <Button Text="{Binding Recipe1Name}"
-                                Clicked="OnRecipe1Clicked"
                                 IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="1"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"
@@ -60,7 +61,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe2Name}"
-                                Clicked="OnRecipe2Clicked"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="2"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -76,7 +78,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe3Name}"
-                                Clicked="OnRecipe3Clicked"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="3"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -92,7 +95,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe4Name}"
-                                Clicked="OnRecipe4Clicked"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="4"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -108,7 +112,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe5Name}"
-                                Clicked="OnRecipe5Clicked"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="5"
                                 IsEnabled="{Binding CanInteract}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"

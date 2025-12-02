@@ -5,11 +5,13 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using UAUIngleza_plc.Services;
 using UAUIngleza_plc.Models;
+using System.Windows.Input;
 
 namespace UAUIngleza_plc
 {
     public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
+        public ICommand ChangeRecipe { get; private set; }
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly IPLCService _plcService;
         private readonly IStorageService _storageService;
@@ -152,6 +154,7 @@ namespace UAUIngleza_plc
             InitializeComponent();
             _plcService = plcService;
             _storageService = storageService;
+            ChangeRecipe = new Command<string>(async (param) => await WriteRecipeToPLC(param));
             BindingContext = this;
         }
 
@@ -193,14 +196,6 @@ namespace UAUIngleza_plc
             try
             {
                 var config = await _storageService.GetConfigAsync();
-                //if (config != null && !string.IsNullOrEmpty(config.CameraIp))
-                //{
-                //    CameraWebView.Source = ($"http://{config.CameraIp}:60000/api/v1/script_stream");
-                //}
-                //else
-                //{
-                //    Console.WriteLine("Nenhum IP de câmera configurado");
-                //}
                 string urlStream = $"http://{config.CameraIp}:60000/api/v1/script_stream";
 
                 string htmlContent = $@"
@@ -318,55 +313,28 @@ namespace UAUIngleza_plc
             }
         }
 
-        private async Task WriteRecipeToPLC(int recipeNumber)
+        public async Task WriteRecipeToPLC(string recipeValue)
         {
-            if (!CanInteract)
-            {
-                await DisplayAlert("Aviso", "PLC não está conectado!", "OK");
-                return;
-            }
-
             IsProcessing = true;
 
+            if (short.TryParse(recipeValue, out short recipeNumber))
             try
             {
-                string recipeName = _recipesConfig?.Recipes[recipeNumber]?.Name ?? $"Receita {recipeNumber + 1}";
-                
-                await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
+                if (_plcService.Plc != null)
+                {
+                    await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
+                    return;
+                }
+
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erro", $"Erro: {ex.Message}", "OK");
+                await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
             }
             finally
             {
                 IsProcessing = false;
             }
-        }
-
-        private async void OnRecipe1Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(0);
-        }
-
-        private async void OnRecipe2Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(1);
-        }
-
-        private async void OnRecipe3Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(2);
-        }
-
-        private async void OnRecipe4Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(3);
-        }
-
-        private async void OnRecipe5Clicked(object? sender, EventArgs e)
-        {
-            await WriteRecipeToPLC(4);
         }
 
         private void OnMenuClicked(object? sender, EventArgs e)

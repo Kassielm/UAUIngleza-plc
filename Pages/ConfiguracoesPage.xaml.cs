@@ -54,7 +54,7 @@ namespace UAUIngleza_plc.Pages
             {
                 if (!ValidateInputs())
                 {
-                    await DisplayAlert("Erro", "⚠️ Preencha todos os campos corretamente", "OK");
+                    await DisplayAlertAsync("Erro", "⚠️ Preencha todos os campos corretamente", "OK");
                     return;
                 }
 
@@ -68,11 +68,11 @@ namespace UAUIngleza_plc.Pages
 
                 await _storageService.SaveConfigAsync(config);
                 
-                await DisplayAlert("Sucesso", "✅ Configuração salva com sucesso!", "OK");
+                await DisplayAlertAsync("Sucesso", "✅ Configuração salva com sucesso!", "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Erro", $"❌ Erro ao salvar: {ex.Message}", "OK");
+                await DisplayAlertAsync("Erro", $"❌ Erro ao salvar: {ex.Message}", "OK");
             }
         }
 

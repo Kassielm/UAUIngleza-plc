@@ -16,26 +16,22 @@ namespace UAUIngleza_plc.Services
         Task StartAutoReconnect();
         void StopAutoReconnect();
         IObservable<T> ObserveAddress<T>(string address, TransmissionMode mode = TransmissionMode.OnChange) where T : struct;
+        void Dispose();
     }
 
-    public class PLCService : IPLCService, IDisposable
+    public partial class PLCService(IStorageService storageService) : IPLCService, IDisposable
     {
-        private readonly IStorageService _storageService;
-        private readonly BehaviorSubject<ConnectionState> _connectionStatus;
+        private const ConnectionState Value = default;
+        private readonly IStorageService _storageService = storageService;
+        private readonly BehaviorSubject<ConnectionState> _connectionStatus = new(Value);
         private CancellationTokenSource? _reconnectCancellation;
         private IDisposable? _connectionStateSubscription;
         private bool _isReconnecting = false;
-        private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _connectionLock = new(1, 1);
 
         public Sharp7Plc? Plc { get; private set; }
         public IObservable<ConnectionState> ConnectionStatus => _connectionStatus.AsObservable();
         public bool IsConnected => _connectionStatus.Value == ConnectionState.Connected;
-
-        public PLCService(IStorageService storageService)
-        {
-            _storageService = storageService;
-            _connectionStatus = new BehaviorSubject<ConnectionState>(default(ConnectionState));
-        }
 
         public async Task<bool> ConnectAsync()
         {
@@ -47,7 +43,7 @@ namespace UAUIngleza_plc.Services
                 if (config == null || string.IsNullOrEmpty(config.IpAddress))
                 {
                     Console.WriteLine("⚠️ Nenhuma configuração encontrada no Storage.");
-                    _connectionStatus.OnNext(default(ConnectionState));
+                    _connectionStatus.OnNext(default);
                     return false;
                 }
 
@@ -65,7 +61,7 @@ namespace UAUIngleza_plc.Services
                 if (completedTask == timeoutTask)
                 {
                     Console.WriteLine("⏱️ Timeout ao conectar ao PLC");
-                    _connectionStatus.OnNext(default(ConnectionState));
+                    _connectionStatus.OnNext(default);
                     CleanupConnection();
                     Console.WriteLine("❌ Falha na conexão!");
                     return false;
@@ -80,7 +76,7 @@ namespace UAUIngleza_plc.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"❌ Exceção ao conectar PLC: {ex.Message}");
-                _connectionStatus.OnNext(default(ConnectionState));
+                _connectionStatus.OnNext(default);
                 CleanupConnection();
                 return false;
             }
@@ -112,7 +108,7 @@ namespace UAUIngleza_plc.Services
                     error =>
                     {
                         Console.WriteLine($"❌ Erro no stream de conexão: {error.Message}");
-                        _connectionStatus.OnNext(default(ConnectionState));
+                        _connectionStatus.OnNext(default);
                     });
         }
 
@@ -186,7 +182,7 @@ namespace UAUIngleza_plc.Services
         {
             try
             {
-                await Plc.SetValue<short>(address, value);
+                await Plc!.SetValue<short>(address, value);
             }
             catch (Exception ex)
             {
@@ -198,7 +194,7 @@ namespace UAUIngleza_plc.Services
         {
             try
             {
-                return await Plc.GetValue<short>(address);
+                return await Plc!.GetValue<short>(address);
             }
             catch (Exception ex)
             {
@@ -229,7 +225,7 @@ namespace UAUIngleza_plc.Services
         {
             StopAutoReconnect();
             CleanupConnection();
-            _connectionStatus.OnNext(default(ConnectionState));
+            _connectionStatus.OnNext(default);
             Console.WriteLine("🔌 Desconectado do PLC");
         }
 

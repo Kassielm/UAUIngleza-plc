@@ -264,6 +264,23 @@ namespace UAUIngleza_plc
             }
         }
 
+        public async Task ResetCount()
+        {
+            try
+            {
+                if (_plcService.Plc != null)
+                {
+                    await _plcService.Plc!.SetValue<short>("DB2.INT0", 0);
+                    await _plcService.Plc!.SetValue<short>("DB2.INT2", 0);
+                    await _plcService.Plc!.SetValue<short>("DB2.INT4", 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
+            }
+        }
+
         public async Task WriteRecipeToPLC(string recipeValue)
         {
             if (short.TryParse(recipeValue, out short recipeNumber))

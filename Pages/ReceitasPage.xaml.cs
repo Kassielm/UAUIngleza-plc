@@ -9,7 +9,7 @@ namespace UAUIngleza_plc.Pages
         private readonly IPLCService _plcService;
         private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
 
-        private List<(Entry NameEntry, Entry BottleEntry)> _recipeControls;
+        private List<Entry> _recipeControls;
 
         public ReceitasPage(IStorageService storageService, IPLCService plcService)
         {
@@ -17,13 +17,18 @@ namespace UAUIngleza_plc.Pages
             _storageService = storageService;
             _plcService = plcService;
 
-            _recipeControls = new List<(Entry, Entry)>
+            _recipeControls = new List<Entry>
             {
-                (Recipe1Name, Recipe1Bottles),
-                (Recipe2Name, Recipe2Bottles),
-                (Recipe3Name, Recipe3Bottles),
-                (Recipe4Name, Recipe4Bottles),
-                (Recipe5Name, Recipe5Bottles)
+                Recipe1Name,
+                Recipe2Name,
+                Recipe3Name,
+                Recipe4Name,
+                Recipe5Name,
+                Recipe6Name,
+                Recipe7Name,
+                Recipe8Name,
+                Recipe9Name,
+                Recipe10Name
             };
         }
 
@@ -44,10 +49,9 @@ namespace UAUIngleza_plc.Pages
                     if (i < _recipesConfig.Recipes.Count)
                     {
                         var recipe = _recipesConfig.Recipes[i];
-                        var (nameEntry, bottleEntry) = _recipeControls[i];
+                        var nameEntry = _recipeControls[i];
 
                         nameEntry.Text = recipe.Name;
-                        bottleEntry.Text = recipe.BottleCount.ToString();
                     }
                 }
             }
@@ -65,10 +69,9 @@ namespace UAUIngleza_plc.Pages
                 {
                     if (i < _recipesConfig.Recipes.Count)
                     {
-                        var (nameEntry, bottleEntry) = _recipeControls[i];
+                        var nameEntry = _recipeControls[i];
 
                         _recipesConfig.Recipes[i].Name = nameEntry.Text?.Trim() ?? $"Receita {i + 1}";
-                        _recipesConfig.Recipes[i].BottleCount = int.Parse(bottleEntry.Text ?? "0");
                     }
                 }
 
@@ -76,8 +79,7 @@ namespace UAUIngleza_plc.Pages
 
                 if (_plcService.IsConnected)
                 {
-                    await WriteBottleCountsToPLC();
-                    ShowStatus("Receitas salvas e enviadas ao PLC!", Colors.Green);
+                    ShowStatus("Receitas salvas e sincronizadas!", Colors.Green);
                 }
                 else
                 {
@@ -87,22 +89,6 @@ namespace UAUIngleza_plc.Pages
             catch (Exception ex)
             {
                 ShowStatus($"Erro: {ex.Message}", Colors.Red);
-            }
-        }
-
-        private async Task WriteBottleCountsToPLC()
-        {
-            try
-            {
-                foreach (var recipe in _recipesConfig.Recipes)
-                {
-                    await _plcService.Plc!.SetValue<short>(recipe.PlcAddress, (short)recipe.BottleCount);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro ao escrever no PLC: {ex.Message}");
-                throw;
             }
         }
 

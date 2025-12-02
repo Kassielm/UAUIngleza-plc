@@ -12,125 +12,220 @@
                    HorizontalOptions="Center"
                    Margin="0,0,0,20" />
 
-            <!-- Receita 1 -->
-            <Border Stroke="{StaticResource Primary}"
-                    StrokeThickness="2"
-                    Padding="15"
-                    StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📋 Receita 1"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}" />
-                    
-                    <Label Text="Nome da Receita:" FontSize="12" />
-                    <Entry x:Name="Recipe1Name"
-                           Keyboard="Text"
-                           MaxLength="30" />
-                    
-                    <Label Text="Número de Garrafas:" FontSize="12" />
-                    <Entry x:Name="Recipe1Bottles"
-                           Placeholder="Ex: 10"
-                           Keyboard="Numeric"
-                           MaxLength="5" />
-                </VerticalStackLayout>
-            </Border>
+            <!-- Grid com 2 colunas para as receitas -->
+            <Grid ColumnSpacing="15" RowSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-            <!-- Receita 2 -->
-            <Border Stroke="{StaticResource Primary}"
-                    StrokeThickness="2"
-                    Padding="15"
-                    StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📋 Receita 2"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}" />
-                    
-                    <Label Text="Nome da Receita:" FontSize="12" />
-                    <Entry x:Name="Recipe2Name"
-                           Keyboard="Text"
-                           MaxLength="30" />
-                    
-                    <Label Text="Número de Garrafas:" FontSize="12" />
-                    <Entry x:Name="Recipe2Bottles"
-                           Placeholder="Ex: 15"
-                           Keyboard="Numeric"
-                           MaxLength="5" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Receita 1 -->
+                <Border Grid.Column="0" Grid.Row="0"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 1"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe1Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- Receita 3 -->
-            <Border Stroke="{StaticResource Primary}"
-                    StrokeThickness="2"
-                    Padding="15"
-                    StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📋 Receita 3"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}" />
-                    
-                    <Label Text="Nome da Receita:" FontSize="12" />
-                    <Entry x:Name="Recipe3Name"
-                           Keyboard="Text"
-                           MaxLength="30" />
-                    
-                    <Label Text="Número de Garrafas:" FontSize="12" />
-                    <Entry x:Name="Recipe3Bottles"
-                           Placeholder="Ex: 2"
-                           Keyboard="Numeric"
-                           MaxLength="5" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Receita 2 -->
+                <Border Grid.Column="1" Grid.Row="0"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 2"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe2Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- Receita 4 -->
-            <Border Stroke="{StaticResource Primary}"
-                    StrokeThickness="2"
-                    Padding="15"
-                    StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📋 Receita 4"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}" />
-                    
-                    <Label Text="Nome da Receita:" FontSize="12" />
-                    <Entry x:Name="Recipe4Name"
-                           Keyboard="Text"
-                           MaxLength="30" />
-                    
-                    <Label Text="Número de Garrafas:" FontSize="12" />
-                    <Entry x:Name="Recipe4Bottles"
-                           Placeholder="Ex: 5"
-                           Keyboard="Numeric"
-                           MaxLength="5" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Receita 3 -->
+                <Border Grid.Column="0" Grid.Row="1"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 3"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe3Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- Receita 5 -->
-            <Border Stroke="{StaticResource Primary}"
-                    StrokeThickness="2"
-                    Padding="15"
-                    StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="📋 Receita 5"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource Primary}" />
-                    
-                    <Label Text="Nome da Receita:" FontSize="12" />
-                    <Entry x:Name="Recipe5Name"
-                           Keyboard="Text"
-                           MaxLength="30" />
-                    
-                    <Label Text="Número de Garrafas:" FontSize="12" />
-                    <Entry x:Name="Recipe5Bottles"
-                           Placeholder="Ex: 8"
-                           Keyboard="Numeric"
-                           MaxLength="5" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Receita 4 -->
+                <Border Grid.Column="1" Grid.Row="1"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 4"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe4Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 5 -->
+                <Border Grid.Column="0" Grid.Row="2"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 5"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe5Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 6 -->
+                <Border Grid.Column="1" Grid.Row="2"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 6"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe6Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 7 -->
+                <Border Grid.Column="0" Grid.Row="3"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 7"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe7Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 8 -->
+                <Border Grid.Column="1" Grid.Row="3"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 8"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe8Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 9 -->
+                <Border Grid.Column="0" Grid.Row="4"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 9"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe9Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Receita 10 -->
+                <Border Grid.Column="1" Grid.Row="4"
+                        Stroke="{StaticResource Primary}"
+                        StrokeThickness="2"
+                        Padding="15"
+                        StrokeShape="RoundRectangle 10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Receita 10"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}" />
+                        
+                        <Label Text="Nome:" FontSize="11" />
+                        <Entry x:Name="Recipe10Name"
+                               Keyboard="Text"
+                               FontSize="12"
+                               MaxLength="30" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
 
             <!-- Botão Salvar -->
             <Button Text="💾 SALVAR RECEITAS"

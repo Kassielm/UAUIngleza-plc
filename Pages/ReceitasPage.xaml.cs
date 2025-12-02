@@ -8,7 +8,6 @@ namespace UAUIngleza_plc.Pages
         private readonly IStorageService _storageService;
         private readonly IPLCService _plcService;
         private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
-
         private List<Entry> _recipeControls;
 
         public ReceitasPage(IStorageService storageService, IPLCService plcService)

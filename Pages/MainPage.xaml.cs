@@ -13,162 +13,14 @@ namespace UAUIngleza_plc
     {
         public ICommand ChangeRecipe { get; private set; }
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly IPLCService _plcService;
         private readonly IStorageService _storageService;
-        private RecipesConfiguration _recipesConfig;
+        private readonly IPLCService _plcService;
+        private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
+        private List<Button> _recipeControls;
         private string _connectionStatus = "🔄 Verificando conexão...";
         private string _recipeValue = "---";
         private bool _isConnected = false;
-        private string _recipe1Name = "Receita 1";
-        private string _recipe2Name = "Receita 2";
-        private string _recipe3Name = "Receita 3";
-        private string _recipe4Name = "Receita 4";
-        private string _recipe5Name = "Receita 5";
-        private string _recipe6Name = "Receita 6";
-        private string _recipe7Name = "Receita 7";
-        private string _recipe8Name = "Receita 8";
-        private string _recipe9Name = "Receita 9";
-        private string _recipe10Name = "Receita 10";
-
         private const string RecipeAddress = "DB1.DBW0";
-
-        public string Recipe1Name
-        {
-            get => _recipe1Name;
-            set
-            {
-                if (_recipe1Name != value)
-                {
-                    _recipe1Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string Recipe2Name
-        {
-            get => _recipe2Name;
-            set
-            {
-                if (_recipe2Name != value)
-                {
-                    _recipe2Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string Recipe3Name
-        {
-            get => _recipe3Name;
-            set
-            {
-                if (_recipe3Name != value)
-                {
-                    _recipe3Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string Recipe4Name
-        {
-            get => _recipe4Name;
-            set
-            {
-                if (_recipe4Name != value)
-                {
-                    _recipe4Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string Recipe5Name
-        {
-            get => _recipe5Name;
-            set
-            {
-                if (_recipe5Name != value)
-                {
-                    _recipe5Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public string Recipe6Name
-        {
-            get => _recipe6Name;
-            set
-            {
-                if (_recipe6Name != value)
-                {
-                    _recipe6Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public string Recipe7Name
-        {
-            get => _recipe7Name;
-            set
-            {
-                if (_recipe7Name != value)
-                {
-                    _recipe7Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public string Recipe8Name
-        {
-            get => _recipe8Name;
-            set
-            {
-                if (_recipe8Name != value)
-                {
-                    _recipe8Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public string Recipe9Name
-        {
-            get => _recipe9Name;
-            set
-            {
-                if (_recipe9Name != value)
-                {
-                    _recipe9Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public string Recipe10Name
-        {
-            get => _recipe10Name;
-            set
-            {
-                if (_recipe10Name != value)
-                {
-                    _recipe10Name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string ConnectionStatus
-        {
-            get => _connectionStatus;
-            set
-            {
-                if (_connectionStatus != value)
-                {
-                    _connectionStatus = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
 
         public string RecipeValue
         {
@@ -178,6 +30,18 @@ namespace UAUIngleza_plc
                 if (_recipeValue != value)
                 {
                     _recipeValue = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string ConnectionStatus
+        {
+            get => _connectionStatus;
+            set
+            {
+                if (_connectionStatus != value)
+                {
+                    _connectionStatus = value;
                     OnPropertyChanged();
                 }
             }
@@ -196,11 +60,25 @@ namespace UAUIngleza_plc
             }
         }
 
-        public MainPage(IPLCService plcService, IStorageService storageService)
+        public MainPage(IStorageService storageService, IPLCService plcService)
         {
             InitializeComponent();
-            _plcService = plcService;
             _storageService = storageService;
+            _plcService = plcService;
+
+            _recipeControls = new List<Button>
+            {
+                Recipe1Name,
+                Recipe2Name,
+                Recipe3Name,
+                Recipe4Name,
+                Recipe5Name,
+                Recipe6Name,
+                Recipe7Name,
+                Recipe8Name,
+                Recipe9Name,
+                Recipe10Name
+            };
             ChangeRecipe = new Command<string>(async (param) => await WriteRecipeToPLC(param));
             BindingContext = this;
         }
@@ -225,22 +103,21 @@ namespace UAUIngleza_plc
             try
             {
                 _recipesConfig = await _storageService.GetRecipesAsync();
-                
-                Recipe1Name = _recipesConfig?.Recipes[0]?.Name ?? "Receita 1";
-                Recipe2Name = _recipesConfig?.Recipes[1]?.Name ?? "Receita 2";
-                Recipe3Name = _recipesConfig?.Recipes[2]?.Name ?? "Receita 3";
-                Recipe4Name = _recipesConfig?.Recipes[3]?.Name ?? "Receita 4";
-                Recipe5Name = _recipesConfig?.Recipes[4]?.Name ?? "Receita 5";
-                Recipe6Name = _recipesConfig?.Recipes[5]?.Name ?? "Receita 6";
-                Recipe7Name = _recipesConfig?.Recipes[6]?.Name ?? "Receita 7";
-                Recipe8Name = _recipesConfig?.Recipes[7]?.Name ?? "Receita 8";
-                Recipe9Name = _recipesConfig?.Recipes[8]?.Name ?? "Receita 9";
-                Recipe10Name = _recipesConfig?.Recipes[9]?.Name ?? "Receita 10";
+
+                for (int i = 0; i < _recipeControls.Count; i++)
+                {
+                    if (i < _recipesConfig.Recipes.Count)
+                    {
+                        var recipe = _recipesConfig.Recipes[i];
+                        var nameEntry = _recipeControls[i];
+
+                        nameEntry.Text = recipe.Name;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                _recipesConfig = new RecipesConfiguration();
-                Console.WriteLine($"Erro ao carregar configuração de receitas: {ex.Message}");
+                Console.WriteLine($"Erro ao carregar receitas: {ex.Message}");
             }
         }
 

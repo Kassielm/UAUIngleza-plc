@@ -15,7 +15,7 @@ namespace UAUIngleza_plc.Services
         void Disconnect();
         Task StartAutoReconnect();
         void StopAutoReconnect();
-
+        IObservable<T> ObserveAddress<T>(string address, TransmissionMode mode = TransmissionMode.OnChange) where T : struct;
     }
 
     public class PLCService : IPLCService, IDisposable
@@ -205,6 +205,24 @@ namespace UAUIngleza_plc.Services
                 Console.WriteLine($"❌ Erro ao obter valor INT do PLC: {ex.Message}");
                 return null;
             }
+        }
+
+        public IObservable<T> ObserveAddress<T>(string address, TransmissionMode mode = TransmissionMode.OnChange) where T : struct
+        {
+            return ConnectionStatus
+                .Where(state => state == ConnectionState.Connected)
+                .SelectMany(_ =>
+                {
+                    if (Plc == null)
+                        return Observable.Empty<T>();
+
+                    return Plc.CreateNotification<T>(address, mode)
+                        .Catch<T, Exception>(ex =>
+                        {
+                            Console.WriteLine($"⚠️ Erro ao ler {address}: {ex.Message}");
+                            return Observable.Return(default(T));
+                        });
+                });
         }
 
         public void Disconnect()

@@ -17,47 +17,68 @@ namespace UAUIngleza_plc
         private readonly IPLCService _plcService;
         private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
         private List<Button> _recipeControls;
-        private string _connectionStatus = "🔄 Verificando conexão...";
-        private string _recipeValue = "---";
-        private bool _isConnected = false;
-        private const string RecipeAddress = "DB1.DBW0";
+        private readonly Dictionary<string, object> _propertyValues = new();
 
         public string RecipeValue
         {
-            get => _recipeValue;
-            set
-            {
-                if (_recipeValue != value)
-                {
-                    _recipeValue = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => GetProperty("---");
+            set => SetProperty(value);
         }
+
+        public string TotalCaixas
+        {
+            get => GetProperty("---");
+            set => SetProperty(value);
+        }
+
+        public string CaixasBoas
+        {
+            get => GetProperty("---");
+            set => SetProperty(value);
+        }
+
+        public string CaixasRejeitadas
+        {
+            get => GetProperty("---");
+            set => SetProperty(value);
+        }
+
         public string ConnectionStatus
         {
-            get => _connectionStatus;
-            set
-            {
-                if (_connectionStatus != value)
-                {
-                    _connectionStatus = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => GetProperty("🔄 Verificando conexão...");
+            set => SetProperty(value);
         }
 
         public bool IsConnected
         {
-            get => _isConnected;
-            set
+            get => GetProperty(false);
+            set => SetProperty(value);
+        }
+
+        private T GetProperty<T>(T defaultValue = default!, [CallerMemberName] string propertyName = "")
+        {
+            try
             {
-                if (_isConnected != value)
-                {
-                    _isConnected = value;
-                    OnPropertyChanged();
-                }
+                if (_propertyValues.TryGetValue(propertyName, out var value))
+                    return (T)value;
+                return defaultValue;
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"deu ruim: {ex.Message}");
+                return defaultValue;
             }
+        }
+
+        private void SetProperty<T>(T value, [CallerMemberName] string propertyName = "")
+        {
+            if (_propertyValues.TryGetValue(propertyName, out var existingValue))
+            {
+                if (EqualityComparer<T>.Default.Equals((T)existingValue, value))
+                    return;
+            }
+
+            _propertyValues[propertyName] = value!;
+            OnPropertyChanged(propertyName);
         }
 
         public MainPage(IStorageService storageService, IPLCService plcService)
@@ -207,39 +228,39 @@ namespace UAUIngleza_plc
         {
             try
             {
-                var bitSubscription = _plcService.ConnectionStatus
-                    .Where(state => state == ConnectionState.Connected)
-                    .SelectMany(_ =>
-                    {
-                        if (_plcService.Plc == null)
-                            return Observable.Empty<short>();
-
-                        return _plcService.Plc.CreateNotification<short>(
-                            RecipeAddress, 
-                            TransmissionMode.OnChange)
-                            .Catch<short, Exception>(ex =>
-                            {
-                                Console.WriteLine($"⚠Erro ao ler {RecipeAddress}: {ex.Message}");
-                                return Observable.Return<short>(0);
-                            });
-                    })
-                    .ObserveOn(SynchronizationContext.Current!)
-                    .Subscribe(
-                        value =>
-                        {
-                            RecipeValue = value.ToString();
-                        },
-                        error =>
-                        {
-                            Console.WriteLine($"Erro na notificação: {error.Message}");
-                            RecipeValue = "ERRO";
-                        });
-
-                _disposables.Add(bitSubscription);
+                SubscribeToAddress<short>("DB1.INT0", value => RecipeValue = value.ToString());
+                SubscribeToAddress<short>("DB2.INT0", value => TotalCaixas = value.ToString());
+                SubscribeToAddress<short>("DB2.INT2", value => CaixasBoas = value.ToString());
+                SubscribeToAddress<short>("DB2.INT4", value => CaixasRejeitadas = value.ToString());
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao subscrever mudanças do bit: {ex.Message}");
+            }
+        }
+
+        private void SubscribeToAddress<T>(string address, Action<T> onValueChanged, string errorValue = "ERRO") where T : struct
+        {
+            try
+            {
+                var subscription = _plcService.ObserveAddress<T>(address)
+                    .ObserveOn(SynchronizationContext.Current!)
+                    .Subscribe(
+                        value => onValueChanged(value),
+                        error =>
+                        {
+                            Console.WriteLine($"Erro na notificação para {address}: {error.Message}");
+                            if (typeof(T) == typeof(short) || typeof(T) == typeof(int))
+                            {
+                                onValueChanged((T)(object)0);
+                            }
+                        });
+
+                _disposables.Add(subscription);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao subscrever {address}: {ex.Message}");
             }
         }
 
@@ -250,7 +271,7 @@ namespace UAUIngleza_plc
             {
                 if (_plcService.Plc != null)
                 {
-                    await _plcService.Plc!.SetValue<short>(RecipeAddress, (short)recipeNumber);
+                    await _plcService.Plc!.SetValue<short>("DB1.INT0", (short)recipeNumber);
                     return;
                 }
 

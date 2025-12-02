@@ -54,7 +54,7 @@
                         <Button Grid.Column="0" Grid.Row="0"
                                 x:Name="Recipe1Name"
                                 Command="{Binding ChangeRecipe}"
-                                CommandParameter="1"
+                                CommandParameter="2"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="12"

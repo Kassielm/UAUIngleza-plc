@@ -19,7 +19,6 @@ namespace UAUIngleza_plc
         private string _connectionStatus = "🔄 Verificando conexão...";
         private string _recipeValue = "---";
         private bool _isConnected = false;
-        private bool _isProcessing = false;
         private string _recipe1Name = "Receita 1";
         private string _recipe2Name = "Receita 2";
         private string _recipe3Name = "Receita 3";
@@ -128,26 +127,9 @@ namespace UAUIngleza_plc
                 {
                     _isConnected = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(CanInteract));
                 }
             }
         }
-
-        public bool IsProcessing
-        {
-            get => _isProcessing;
-            set
-            {
-                if (_isProcessing != value)
-                {
-                    _isProcessing = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(CanInteract));
-                }
-            }
-        }
-
-        public bool CanInteract => IsConnected && !IsProcessing;
 
         public MainPage(IPLCService plcService, IStorageService storageService)
         {
@@ -188,6 +170,7 @@ namespace UAUIngleza_plc
             catch (Exception ex)
             {
                 _recipesConfig = new RecipesConfiguration();
+                Console.WriteLine($"Erro ao carregar configuração de receitas: {ex.Message}");
             }
         }
 
@@ -315,8 +298,6 @@ namespace UAUIngleza_plc
 
         public async Task WriteRecipeToPLC(string recipeValue)
         {
-            IsProcessing = true;
-
             if (short.TryParse(recipeValue, out short recipeNumber))
             try
             {
@@ -330,10 +311,6 @@ namespace UAUIngleza_plc
             catch (Exception ex)
             {
                 await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
-            }
-            finally
-            {
-                IsProcessing = false;
             }
         }
 

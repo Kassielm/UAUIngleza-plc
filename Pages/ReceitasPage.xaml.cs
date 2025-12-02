@@ -7,8 +7,8 @@ namespace UAUIngleza_plc.Pages
     {
         private readonly IStorageService _storageService;
         private readonly IPLCService _plcService;
-        private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
-        private List<(Entry NameEntry, Entry BottleEntry)> _recipeControls;
+        private RecipesConfiguration _recipesConfig = new();
+        private readonly List<(Entry NameEntry, Entry BottleEntry)> _recipeControls;
 
         public ReceitasPage(IStorageService storageService, IPLCService plcService)
         {
@@ -16,8 +16,8 @@ namespace UAUIngleza_plc.Pages
             _storageService = storageService;
             _plcService = plcService;
 
-            _recipeControls = new List<(Entry, Entry)>
-            {
+            _recipeControls =
+            [
                 (Recipe1Name, Recipe1Bottles),
                 (Recipe2Name, Recipe2Bottles),
                 (Recipe3Name, Recipe3Bottles),
@@ -28,7 +28,7 @@ namespace UAUIngleza_plc.Pages
                 (Recipe8Name, Recipe8Bottles),
                 (Recipe9Name, Recipe9Bottles),
                 (Recipe10Name, Recipe10Bottles)
-            };
+            ];
         }
 
         protected override async void OnAppearing()

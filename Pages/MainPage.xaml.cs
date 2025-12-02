@@ -12,12 +12,12 @@ namespace UAUIngleza_plc
     public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
         public ICommand ChangeRecipe { get; private set; }
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _disposables = [];
         private readonly IStorageService _storageService;
         private readonly IPLCService _plcService;
-        private RecipesConfiguration _recipesConfig = new RecipesConfiguration();
-        private List<Button> _recipeControls;
-        private readonly Dictionary<string, object> _propertyValues = new();
+        private RecipesConfiguration _recipesConfig = new();
+        private readonly List<Button> _recipeControls;
+        private readonly Dictionary<string, object> _propertyValues = [];
 
         public string RecipeValue
         {
@@ -87,8 +87,8 @@ namespace UAUIngleza_plc
             _storageService = storageService;
             _plcService = plcService;
 
-            _recipeControls = new List<Button>
-            {
+            _recipeControls =
+            [
                 Recipe1Name,
                 Recipe2Name,
                 Recipe3Name,
@@ -99,7 +99,7 @@ namespace UAUIngleza_plc
                 Recipe8Name,
                 Recipe9Name,
                 Recipe10Name
-            };
+            ];
             ChangeRecipe = new Command<string>(async (param) => await WriteRecipeToPLC(param));
             BindingContext = this;
         }
@@ -239,7 +239,7 @@ namespace UAUIngleza_plc
             }
         }
 
-        private void SubscribeToAddress<T>(string address, Action<T> onValueChanged, string errorValue = "ERRO") where T : struct
+        private void SubscribeToAddress<T>(string address, Action<T> onValueChanged) where T : struct
         {
             try
             {

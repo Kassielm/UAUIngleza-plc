@@ -41,6 +41,7 @@ namespace UAUIngleza_plc.Pages
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Erro ao carregar configuração: {ex.Message}");
                 IpEntry.Text = "192.168.2.1";
                 RackEntry.Text = "0";
                 SlotEntry.Text = "1";

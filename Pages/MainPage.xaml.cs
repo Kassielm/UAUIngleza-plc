@@ -193,19 +193,52 @@ namespace UAUIngleza_plc
             try
             {
                 var config = await _storageService.GetConfigAsync();
+                //if (config != null && !string.IsNullOrEmpty(config.CameraIp))
+                //{
+                //    CameraWebView.Source = ($"http://{config.CameraIp}:60000/api/v1/script_stream");
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Nenhum IP de câmera configurado");
+                //}
+                string urlStream = $"http://{config.CameraIp}:60000/api/v1/script_stream";
 
-                if (config != null && !string.IsNullOrEmpty(config.CameraIp))
+                string htmlContent = $@"
+                <html>
+                <head>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <style>
+                        body {{
+                            margin: 0;
+                            padding: 0;
+                            background-color: black;
+                            height: 100vh;
+                        }}
+                        img {{
+                            width: 100%;
+                            height: 100vh;
+                            object-fit: contain;
+                            object-position: left;
+                            object-position: top;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <img src='{urlStream}' />
+                </body>
+                </html>";
+
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    CameraWebView.Source = ($"http://{config.CameraIp}:60000/api/v1/script_stream");
-                }
-                else
-                {
-                    Console.WriteLine("Nenhum IP de câmera configurado");
-                }
+                    CameraWebView.Source = new HtmlWebViewSource
+                    {
+                        Html = htmlContent
+                    };
+                });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar configuração da câmera: {ex.Message}");
+                Console.WriteLine($"Erro no teste: {ex.Message}");
             }
         }
 

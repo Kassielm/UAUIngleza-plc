@@ -19,7 +19,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>UAUIngleza-plc</ApplicationTitle>
+		<ApplicationTitle>Sistema Visão UAUIngleza</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.uauinglezaplc</ApplicationId>
@@ -41,11 +41,11 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\logoo.svg" Color="#FF0000"/>
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
-
+		<MauiSplashScreen Include="Resources\Splash\conecsa_resize.svg"/>
+		
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />

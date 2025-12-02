@@ -35,17 +35,9 @@
                 <!-- Botões de Receitas -->
                 <ScrollView Grid.Row="0" VerticalOptions="FillAndExpand">
                     <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                        
-                        <Label Text="📋 RECEITAS"
-                               FontSize="12"
-                               FontAttributes="Bold"
-                               TextColor="#cccccc"
-                               HorizontalOptions="Center"
-                               Margin="0,0,0,10" />
-
                         <Button Text="{Binding Recipe1Name}"
-                                Clicked="OnRecipe1Clicked"
-                                IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="1"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"
@@ -60,8 +52,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe2Name}"
-                                Clicked="OnRecipe2Clicked"
-                                IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="2"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"
@@ -76,8 +68,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe3Name}"
-                                Clicked="OnRecipe3Clicked"
-                                IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="3"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"
@@ -92,8 +84,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe4Name}"
-                                Clicked="OnRecipe4Clicked"
-                                IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="4"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"
@@ -108,8 +100,8 @@
                         </Button>
 
                         <Button Text="{Binding Recipe5Name}"
-                                Clicked="OnRecipe5Clicked"
-                                IsEnabled="{Binding CanInteract}"
+                                Command="{Binding ChangeRecipe}"
+                                CommandParameter="5"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="14"

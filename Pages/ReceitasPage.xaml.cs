@@ -3,22 +3,19 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Models;
-using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc.Pages
 {
     public partial class ReceitasPage : ContentPage, INotifyPropertyChanged
     {
         private readonly IRecipeRepository _recipeRepository;
-        private readonly IPlcService _plcService;
 
-        public ObservableCollection<Recipe> Recipes { get; } = new();
+        public ObservableCollection<Recipe> Recipes { get; } = [];
 
-        public ReceitasPage(IRecipeRepository recipeRepository, IPlcService plcService)
+        public ReceitasPage(IRecipeRepository recipeRepository)
         {
             InitializeComponent();
             _recipeRepository = recipeRepository;
-            _plcService = plcService;
             BindingContext = this;
         }
 

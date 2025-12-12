@@ -54,7 +54,7 @@
                         <Button Grid.Column="0" Grid.Row="0"
                                 x:Name="Recipe1Name"
                                 Command="{Binding ChangeRecipe}"
-                                CommandParameter="2"
+                                CommandParameter="1"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 FontSize="12"
@@ -275,7 +275,7 @@
                             <Label Text="RECEITA ATIVA"
                                    FontSize="9"
                                    FontAttributes="Bold"
-                                   TextColor="#888888"
+                                   TextColor="White"
                                    HorizontalOptions="Center" />
 
                             <Label Text="{Binding RecipeValue}"
@@ -308,10 +308,10 @@
                                 <Label Text="CAIXAS BOAS"
                                        FontSize="8"
                                        FontAttributes="Bold"
-                                       TextColor="#888888"
+                                       TextColor="White"
                                        HorizontalOptions="Center" />
 
-                                <Label Text="0"
+                                <Label Text="{Binding CaixasBoas}"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"
@@ -330,10 +330,10 @@
                                 <Label Text="CAIXAS RUINS"
                                        FontSize="8"
                                        FontAttributes="Bold"
-                                       TextColor="#888888"
+                                       TextColor="White"
                                        HorizontalOptions="Center" />
 
-                                <Label Text="0"
+                                <Label Text="{Binding CaixasRejeitadas}"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"
@@ -356,7 +356,7 @@
                                        TextColor="#888888"
                                        HorizontalOptions="Center" />
 
-                                <Label Text="0"
+                                <Label Text="{Binding TotalCaixas}"
                                        FontSize="22"
                                        FontAttributes="Bold"
                                        HorizontalOptions="Center"

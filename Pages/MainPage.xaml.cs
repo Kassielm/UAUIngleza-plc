@@ -228,10 +228,10 @@ namespace UAUIngleza_plc
         {
             try
             {
-                SubscribeToAddress<short>("DB1.INT0", value => RecipeValue = value.ToString());
-                SubscribeToAddress<short>("DB2.INT0", value => TotalCaixas = value.ToString());
-                SubscribeToAddress<short>("DB2.INT2", value => CaixasBoas = value.ToString());
-                SubscribeToAddress<short>("DB2.INT4", value => CaixasRejeitadas = value.ToString());
+                SubscribeToAddress<short>("DB100.INT14", value => RecipeValue = value.ToString());
+                SubscribeToAddress<short>("DB1.INT0", value => TotalCaixas = value.ToString());
+                SubscribeToAddress<short>("DB1.INT2", value => CaixasBoas = value.ToString());
+                SubscribeToAddress<short>("DB1.INT4", value => CaixasRejeitadas = value.ToString());
             }
             catch (Exception ex)
             {
@@ -264,15 +264,15 @@ namespace UAUIngleza_plc
             }
         }
 
-        public async Task ResetCount()
+        public async void ResetCount(object sender, EventArgs e)
         {
             try
             {
                 if (_plcService.Plc != null)
                 {
-                    await _plcService.Plc!.SetValue<short>("DB2.INT0", 0);
-                    await _plcService.Plc!.SetValue<short>("DB2.INT2", 0);
-                    await _plcService.Plc!.SetValue<short>("DB2.INT4", 0);
+                    await _plcService.Plc!.SetValue<short>("DB1.INT0", 0);
+                    await _plcService.Plc!.SetValue<short>("DB1.INT2", 0);
+                    await _plcService.Plc!.SetValue<short>("DB1.INT4", 0);
                 }
             }
             catch (Exception ex)
@@ -288,7 +288,7 @@ namespace UAUIngleza_plc
             {
                 if (_plcService.Plc != null)
                 {
-                    await _plcService.Plc!.SetValue<short>("DB1.INT0", (short)recipeNumber);
+                    await _plcService.Plc!.SetValue<short>("DB100.INT14", (short)recipeNumber);
                     return;
                 }
 

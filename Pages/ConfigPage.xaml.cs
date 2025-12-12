@@ -1,5 +1,4 @@
 ﻿using UAUIngleza_plc.Interfaces;
-using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc.Pages
 {
@@ -24,30 +23,21 @@ namespace UAUIngleza_plc.Pages
             try
             {
                 var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
-
-                if (config != null)
-                {
-                    IpEntry.Text = config.IpAddress ?? "192.168.2.1";
-                    RackEntry.Text = config.Rack.ToString();
-                    SlotEntry.Text = config.Slot.ToString();
-                    CameraEntry.Text = config.CameraIp ?? "192.168.0.101";
-                }
-                else
-                {
-                    IpEntry.Text = "192.168.2.1";
-                    RackEntry.Text = "0";
-                    SlotEntry.Text = "1";
-                    CameraEntry.Text = "192.168.0.101";
-                }
+                LoadConfigurationValues(config);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao carregar configuração: {ex.Message}");
-                IpEntry.Text = "192.168.2.1";
-                RackEntry.Text = "0";
-                SlotEntry.Text = "1";
-                CameraEntry.Text = "192.168.0.101";
+                LoadConfigurationValues(null);
             }
+        }
+
+        private void LoadConfigurationValues(Models.SystemConfiguration? config)
+        {
+            IpEntry.Text = config?.IpAddress ?? "192.168.2.1";
+            RackEntry.Text = (config?.Rack ?? 0).ToString();
+            SlotEntry.Text = (config?.Slot ?? 1).ToString();
+            CameraEntry.Text = config?.CameraIp ?? "192.168.0.101";
         }
 
         private async void OnSaveConfigClicked(object sender, EventArgs e)

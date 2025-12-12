@@ -1,16 +1,17 @@
-﻿using UAUIngleza_plc.Models;
+﻿using UAUIngleza_plc.Interfaces;
+using UAUIngleza_plc.Models;
 using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc.Pages
 {
-   public partial class ReceitasPage : ContentPage
+    public partial class ReceitasPage : ContentPage
     {
         private readonly IStorageService _storageService;
-        private readonly IPLCService _plcService;
+        private readonly IPlcService _plcService;
         private RecipesConfiguration _recipesConfig = new();
         private readonly List<(Entry NameEntry, Entry BottleEntry)> _recipeControls;
 
-        public ReceitasPage(IStorageService storageService, IPLCService plcService)
+        public ReceitasPage(IStorageService storageService, IPlcService plcService)
         {
             InitializeComponent();
             _storageService = storageService;
@@ -27,7 +28,7 @@ namespace UAUIngleza_plc.Pages
                 (Recipe7Name, Recipe7Bottles),
                 (Recipe8Name, Recipe8Bottles),
                 (Recipe9Name, Recipe9Bottles),
-                (Recipe10Name, Recipe10Bottles)
+                (Recipe10Name, Recipe10Bottles),
             ];
         }
 
@@ -71,7 +72,8 @@ namespace UAUIngleza_plc.Pages
                     {
                         var (nameEntry, bottleEntry) = _recipeControls[i];
 
-                        _recipesConfig.Recipes[i].Name = nameEntry.Text?.Trim() ?? $"Receita {i + 1}";
+                        _recipesConfig.Recipes[i].Name =
+                            nameEntry.Text?.Trim() ?? $"Receita {i + 1}";
                         _recipesConfig.Recipes[i].Bottles = int.Parse(bottleEntry.Text ?? "0");
                     }
                 }
@@ -86,7 +88,11 @@ namespace UAUIngleza_plc.Pages
                 else
                 {
                     ShowStatus("Receitas salvas! (PLC offline)", Colors.Orange);
-                    await DisplayAlertAsync("Aviso", "Receitas salvas localmente, mas o PLC está offline.", "OK");
+                    await DisplayAlertAsync(
+                        "Aviso",
+                        "Receitas salvas localmente, mas o PLC está offline.",
+                        "OK"
+                    );
                 }
             }
             catch (Exception ex)
@@ -101,7 +107,10 @@ namespace UAUIngleza_plc.Pages
             {
                 foreach (var recipe in _recipesConfig.Recipes)
                 {
-                    await _plcService.Plc!.SetValue<short>(recipe.PlcAddress, (short)recipe.Bottles);
+                    await _plcService.Plc!.SetValue<short>(
+                        recipe.PlcAddress,
+                        (short)recipe.Bottles
+                    );
                 }
             }
             catch (Exception ex)

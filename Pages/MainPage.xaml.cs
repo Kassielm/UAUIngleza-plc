@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using Sharp7.Rx.Enums;
+using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Models;
 using UAUIngleza_plc.Services;
 
@@ -14,7 +15,7 @@ namespace UAUIngleza_plc
         public Command ChangeRecipe { get; private set; }
         private readonly CompositeDisposable _disposables = [];
         private readonly IStorageService _storageService;
-        private readonly IPLCService _plcService;
+        private readonly IPlcService _plcService;
         private RecipesConfiguration _recipesConfig = new();
         private bool _isUpdatingFromPLC = false;
 
@@ -87,7 +88,7 @@ namespace UAUIngleza_plc
             return true;
         }
 
-        public MainPage(IStorageService storageService, IPLCService plcService)
+        public MainPage(IStorageService storageService, IPlcService plcService)
         {
             InitializeComponent();
             _storageService = storageService;

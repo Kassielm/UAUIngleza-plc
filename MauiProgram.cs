@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Pages;
 using UAUIngleza_plc.Services;
 
@@ -18,12 +19,12 @@ namespace UAUIngleza_plc
                 });
 
             builder.Services.AddSingleton<IStorageService, StorageService>();
-            builder.Services.AddSingleton<IPLCService, PLCService>();
-            
+            builder.Services.AddSingleton<IPlcService, PLCService>();
+
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<ConfiguracoesPage>();
             builder.Services.AddSingleton<ReceitasPage>();
-            
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

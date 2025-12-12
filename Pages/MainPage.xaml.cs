@@ -147,6 +147,15 @@ namespace UAUIngleza_plc
             try
             {
                 var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
+                if (config == null || string.IsNullOrWhiteSpace(config.CameraIp))
+                {
+                    await DisplayAlertAsync(
+                        "Erro",
+                        "Configuração da câmera não encontrada ou IP da câmera não definido.",
+                        "OK"
+                    );
+                    return;
+                }
                 string urlStream = $"http://{config.CameraIp}:60000/api/v1/script_stream";
 
                 string htmlContent =

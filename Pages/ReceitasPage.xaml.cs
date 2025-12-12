@@ -1,35 +1,25 @@
-﻿using UAUIngleza_plc.Interfaces;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Models;
 using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc.Pages
 {
-    public partial class ReceitasPage : ContentPage
+    public partial class ReceitasPage : ContentPage, INotifyPropertyChanged
     {
-        private readonly IStorageService _storageService;
+        private readonly IRecipeRepository _recipeRepository;
         private readonly IPlcService _plcService;
-        private RecipesConfiguration _recipesConfig = new();
-        private readonly List<(Entry NameEntry, Entry BottleEntry)> _recipeControls;
 
-        public ReceitasPage(IStorageService storageService, IPlcService plcService)
+        public ObservableCollection<Recipe> Recipes { get; } = new();
+
+        public ReceitasPage(IRecipeRepository recipeRepository, IPlcService plcService)
         {
             InitializeComponent();
-            _storageService = storageService;
+            _recipeRepository = recipeRepository;
             _plcService = plcService;
-
-            _recipeControls =
-            [
-                (Recipe1Name, Recipe1Bottles),
-                (Recipe2Name, Recipe2Bottles),
-                (Recipe3Name, Recipe3Bottles),
-                (Recipe4Name, Recipe4Bottles),
-                (Recipe5Name, Recipe5Bottles),
-                (Recipe6Name, Recipe6Bottles),
-                (Recipe7Name, Recipe7Bottles),
-                (Recipe8Name, Recipe8Bottles),
-                (Recipe9Name, Recipe9Bottles),
-                (Recipe10Name, Recipe10Bottles),
-            ];
+            BindingContext = this;
         }
 
         protected override async void OnAppearing()
@@ -42,81 +32,162 @@ namespace UAUIngleza_plc.Pages
         {
             try
             {
-                _recipesConfig = await _storageService.GetRecipesAsync();
+                var recipes = await _recipeRepository.GetAsync<Recipe>();
 
-                for (int i = 0; i < _recipeControls.Count; i++)
+                Recipes.Clear();
+                foreach (var recipe in recipes)
                 {
-                    if (i < _recipesConfig.Recipes.Count)
-                    {
-                        var recipe = _recipesConfig.Recipes[i];
-                        var (nameEntry, bottleEntry) = _recipeControls[i];
-
-                        nameEntry.Text = recipe.Name;
-                        bottleEntry.Text = recipe.Bottles.ToString();
-                    }
+                    Recipes.Add(recipe);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar receitas: {ex.Message}");
+                await DisplayAlertAsync("Erro", $"Erro ao carregar receitas: {ex.Message}", "OK");
             }
         }
 
-        private async void OnSaveClicked(object sender, EventArgs e)
+        private async void OnAddRecipeClicked(object sender, EventArgs e)
         {
             try
             {
-                for (int i = 0; i < _recipeControls.Count; i++)
-                {
-                    if (i < _recipesConfig.Recipes.Count)
-                    {
-                        var (nameEntry, bottleEntry) = _recipeControls[i];
+                string name = await DisplayPromptAsync(
+                    "Nova Receita",
+                    "Digite o nome da receita:",
+                    "OK",
+                    "Cancelar",
+                    placeholder: "Ex: Receita Especial",
+                    maxLength: 30
+                );
 
-                        _recipesConfig.Recipes[i].Name =
-                            nameEntry.Text?.Trim() ?? $"Receita {i + 1}";
-                        _recipesConfig.Recipes[i].Bottles = int.Parse(bottleEntry.Text ?? "0");
-                    }
+                if (string.IsNullOrWhiteSpace(name))
+                    return;
+
+                string bottlesStr = await DisplayPromptAsync(
+                    "Quantidade de frascos",
+                    "Digite a quantidade de frascos:",
+                    "OK",
+                    "Cancelar",
+                    placeholder: "Ex: 24",
+                    keyboard: Keyboard.Numeric,
+                    maxLength: 5
+                );
+
+                if (string.IsNullOrWhiteSpace(bottlesStr))
+                    return;
+
+                if (!int.TryParse(bottlesStr, out int bottles))
+                {
+                    await DisplayAlertAsync("Erro", "Quantidade de frascos inválida!", "OK");
+                    return;
                 }
 
-                await _storageService.SaveRecipesAsync(_recipesConfig);
+                var allRecipes = await _recipeRepository.GetAsync<Recipe>();
+                var nextId = allRecipes.Count > 0 ? allRecipes.Max(r => r.Id) + 1 : 1;
 
-                if (_plcService.IsConnected)
+                var newRecipe = new Recipe
                 {
-                    await WriteBottleCountsToPLC();
-                    await DisplayAlertAsync("Sucesso", "Receitas salvas e enviadas ao PLC!", "OK");
-                }
-                else
-                {
-                    ShowStatus("Receitas salvas! (PLC offline)", Colors.Orange);
-                    await DisplayAlertAsync(
-                        "Aviso",
-                        "Receitas salvas localmente, mas o PLC está offline.",
-                        "OK"
-                    );
-                }
+                    Id = nextId,
+                    Name = name.Trim(),
+                    Bottles = bottles,
+                };
+
+                await _recipeRepository.SaveAsync(newRecipe);
+                Recipes.Add(newRecipe);
+
+                ShowStatus("✅ Receita adicionada com sucesso!", Colors.Green);
             }
             catch (Exception ex)
             {
-                ShowStatus($"Erro: {ex.Message}", Colors.Red);
+                await DisplayAlertAsync("Erro", $"Erro ao adicionar receita: {ex.Message}", "OK");
             }
         }
 
-        private async Task WriteBottleCountsToPLC()
+        private async void OnEditRecipeClicked(object sender, EventArgs e)
         {
             try
             {
-                foreach (var recipe in _recipesConfig.Recipes)
+                if (sender is Button button && button.CommandParameter is Recipe recipe)
                 {
-                    await _plcService.Plc!.SetValue<short>(
-                        recipe.PlcAddress,
-                        (short)recipe.Bottles
+                    string name = await DisplayPromptAsync(
+                        "Editar Receita",
+                        "Digite o novo nome da receita:",
+                        "OK",
+                        "Cancelar",
+                        placeholder: "Nome da receita",
+                        initialValue: recipe.Name,
+                        maxLength: 30
                     );
+
+                    if (string.IsNullOrWhiteSpace(name))
+                        return;
+
+                    string bottlesStr = await DisplayPromptAsync(
+                        "Quantidade de frascos",
+                        "Digite a quantidade de frascos:",
+                        "OK",
+                        "Cancelar",
+                        placeholder: "Quantidade",
+                        initialValue: recipe.Bottles.ToString(),
+                        keyboard: Keyboard.Numeric,
+                        maxLength: 5
+                    );
+
+                    if (string.IsNullOrWhiteSpace(bottlesStr))
+                        return;
+
+                    if (!int.TryParse(bottlesStr, out int bottles))
+                    {
+                        await DisplayAlertAsync("Erro", "Quantidade de frascos inválida!", "OK");
+                        return;
+                    }
+
+                    recipe.Name = name.Trim();
+                    recipe.Bottles = bottles;
+
+                    await _recipeRepository.UpdateAsync(recipe);
+
+                    var index = Recipes.IndexOf(recipe);
+                    if (index >= 0)
+                    {
+                        Recipes[index] = recipe;
+                    }
+
+                    await LoadRecipes();
+
+                    ShowStatus("✅ Receita atualizada com sucesso!", Colors.Green);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao escrever no PLC: {ex.Message}");
-                throw;
+                await DisplayAlertAsync("Erro", $"Erro ao editar receita: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnDeleteRecipeClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                if (sender is Button button && button.CommandParameter is Recipe recipe)
+                {
+                    bool confirm = await DisplayAlertAsync(
+                        "Confirmar Exclusão",
+                        $"Deseja realmente excluir a receita '{recipe.Name}'?",
+                        "Sim",
+                        "Não"
+                    );
+
+                    if (!confirm)
+                        return;
+
+                    await _recipeRepository.DeleteAsync(recipe);
+                    Recipes.Remove(recipe);
+
+                    ShowStatus("✅ Receita excluída com sucesso!", Colors.Green);
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync("Erro", $"Erro ao deletar receita: {ex.Message}", "OK");
             }
         }
 
@@ -124,16 +195,23 @@ namespace UAUIngleza_plc.Pages
         {
             StatusLabel.Text = message;
             StatusLabel.TextColor = color;
-            StatusLabel.IsVisible = true;
+            StatusBorder.IsVisible = true;
 
             Task.Run(async () =>
             {
                 await Task.Delay(3000);
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    StatusLabel.IsVisible = false;
+                    StatusBorder.IsVisible = false;
                 });
             });
+        }
+
+        public new event PropertyChangedEventHandler? PropertyChanged;
+
+        protected new void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

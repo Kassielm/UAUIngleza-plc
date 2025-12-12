@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:helpers="clr-namespace:UAUIngleza_plc.Helpers"
+  x:Class="UAUIngleza_plc.Pages.ConfigPage"
+  Title="Configurações"
+  BackgroundColor="{StaticResource Background}"
+>
+  <ScrollView Padding="20">
+    <VerticalStackLayout Spacing="25" Margin="0,10,0,40">
+      <Label
+        Text="Configuração do Sistema"
+        FontSize="24"
+        FontAttributes="Bold"
+        TextColor="{StaticResource TextPrimary}"
+        HorizontalOptions="Center"
+        Margin="0,0,0,20"
+      />
+      <!-- IP do PLC -->
+      <Border
+        BackgroundColor="{StaticResource CardBackground}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="1"
+        Stroke="{StaticResource Gray300}"
+        Padding="16"
+        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}"
+      >
+        <VerticalStackLayout Spacing="10">
+          <HorizontalStackLayout Spacing="8">
+            <Label
+              Text="{x:Static helpers:Icons.Cable}"
+              FontFamily="MaterialIcons"
+              FontSize="18"
+              TextColor="{StaticResource Primary}"
+              VerticalOptions="Center"
+            />
+            <Label
+              Text="Endereço IP do PLC"
+              FontAttributes="Bold"
+              FontSize="14"
+              TextColor="{StaticResource TextPrimary}"
+              VerticalOptions="Center"
+            />
+          </HorizontalStackLayout>
+          <Entry
+            x:Name="IpEntry"
+            Placeholder="192.168.2.1"
+            Keyboard="Url"
+            PlaceholderColor="{StaticResource TextDisabled}"
+            TextColor="{StaticResource TextPrimary}"
+            BackgroundColor="{StaticResource SurfaceVariant}"
+            FontSize="16"
+            HeightRequest="50"
+          />
+        </VerticalStackLayout>
+      </Border>
+      <!-- Rack -->
+      <Border
+        BackgroundColor="{StaticResource CardBackground}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="1"
+        Stroke="{StaticResource Gray300}"
+        Padding="16"
+        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}"
+      >
+        <VerticalStackLayout Spacing="10">
+          <HorizontalStackLayout Spacing="8">
+            <Label
+              Text="{x:Static helpers:Icons.Settings}"
+              FontFamily="MaterialIcons"
+              FontSize="18"
+              TextColor="{StaticResource Secondary}"
+              VerticalOptions="Center"
+            />
+            <Label
+              Text="Rack do PLC"
+              FontAttributes="Bold"
+              FontSize="14"
+              TextColor="{StaticResource TextPrimary}"
+              VerticalOptions="Center"
+            />
+          </HorizontalStackLayout>
+          <Entry
+            x:Name="RackEntry"
+            Placeholder="0"
+            Keyboard="Numeric"
+            PlaceholderColor="{StaticResource TextDisabled}"
+            TextColor="{StaticResource TextPrimary}"
+            BackgroundColor="{StaticResource SurfaceVariant}"
+            FontSize="16"
+            HeightRequest="50"
+          />
+        </VerticalStackLayout>
+      </Border>
+      <!-- Slot -->
+      <Border
+        BackgroundColor="{StaticResource CardBackground}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="1"
+        Stroke="{StaticResource Gray300}"
+        Padding="16"
+        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}"
+      >
+        <VerticalStackLayout Spacing="10">
+          <HorizontalStackLayout Spacing="8">
+            <Label
+              Text="{x:Static helpers:Icons.Info}"
+              FontFamily="MaterialIcons"
+              FontSize="18"
+              TextColor="{StaticResource Info}"
+              VerticalOptions="Center"
+            />
+            <Label
+              Text="Slot do PLC"
+              FontAttributes="Bold"
+              FontSize="14"
+              TextColor="{StaticResource TextPrimary}"
+              VerticalOptions="Center"
+            />
+          </HorizontalStackLayout>
+          <Entry
+            x:Name="SlotEntry"
+            Placeholder="1"
+            Keyboard="Numeric"
+            PlaceholderColor="{StaticResource TextDisabled}"
+            TextColor="{StaticResource TextPrimary}"
+            BackgroundColor="{StaticResource SurfaceVariant}"
+            FontSize="16"
+            HeightRequest="50"
+          />
+        </VerticalStackLayout>
+      </Border>
+      <!-- IP da Câmera -->
+      <Border
+        BackgroundColor="{StaticResource CardBackground}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="1"
+        Stroke="{StaticResource Gray300}"
+        Padding="16"
+        Shadow="{Shadow Brush=Black, Offset='0,2', Radius=8, Opacity=0.3}"
+      >
+        <VerticalStackLayout Spacing="10">
+          <HorizontalStackLayout Spacing="8">
+            <Label
+              Text="{x:Static helpers:Icons.Description}"
+              FontFamily="MaterialIcons"
+              FontSize="18"
+              TextColor="{StaticResource Tertiary}"
+              VerticalOptions="Center"
+            />
+            <Label
+              Text="Endereço IP da Câmera"
+              FontAttributes="Bold"
+              FontSize="14"
+              TextColor="{StaticResource TextPrimary}"
+              VerticalOptions="Center"
+            />
+          </HorizontalStackLayout>
+          <Entry
+            x:Name="CameraEntry"
+            Placeholder="http://192.168.0.101"
+            Keyboard="Url"
+            PlaceholderColor="{StaticResource TextDisabled}"
+            TextColor="{StaticResource TextPrimary}"
+            BackgroundColor="{StaticResource SurfaceVariant}"
+            FontSize="16"
+            HeightRequest="50"
+          />
+        </VerticalStackLayout>
+      </Border>
+      <!-- Botão Salvar -->
+      <Button
+        Clicked="OnSaveConfigClicked"
+        BackgroundColor="{StaticResource Success}"
+        TextColor="White"
+        FontAttributes="Bold"
+        HeightRequest="55"
+        CornerRadius="12"
+        FontSize="16"
+        Margin="0,15,0,0"
+        Shadow="{Shadow Brush={StaticResource Success}, Offset='0,2', Radius=8, Opacity=0.4}"
+      >
+        <Button.ImageSource>
+          <FontImageSource
+            FontFamily="MaterialIcons"
+            Glyph="{x:Static helpers:Icons.Save}"
+            Color="White"
+            Size="22"
+          />
+        </Button.ImageSource>
+        <Button.Text>Salvar Configuração</Button.Text>
+      </Button>
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>

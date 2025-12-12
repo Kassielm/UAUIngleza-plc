@@ -4,7 +4,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
   x:Class="UAUIngleza_plc.MainPage"
   Shell.FlyoutBehavior="Flyout"
-  Title="UAU Ingleza"
+  Title="UAU Ingleza - Inspeção de caixas"
+  BackgroundColor="{StaticResource Background}"
 >
   <Grid ColumnSpacing="0">
     <Grid.ColumnDefinitions>
@@ -18,32 +19,91 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <!-- WebView da Câmera -->
-      <Border Grid.Row="0" StrokeThickness="0">
-        <WebView x:Name="CameraWebView" BackgroundColor="Black" />
+      <Border Grid.Row="0" StrokeThickness="0" BackgroundColor="{StaticResource OffBlack}">
+        <WebView x:Name="CameraWebView" BackgroundColor="{StaticResource OffBlack}" />
+      </Border>
+      <!-- Status de Conexão -->
+      <Border
+        Grid.Row="1"
+        Background="{StaticResource SurfaceVariant}"
+        Padding="14"
+        StrokeThickness="1"
+        Stroke="{StaticResource Gray300}"
+      >
+        <Grid ColumnSpacing="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Border
+            Grid.Column="0"
+            WidthRequest="18"
+            HeightRequest="18"
+            StrokeThickness="2"
+            Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+            StrokeShape="RoundRectangle 9"
+            Background="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+            VerticalOptions="Center"
+          >
+            <Border.Shadow>
+              <Shadow
+                Brush="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+                Radius="10"
+                Opacity="0.6"
+              />
+            </Border.Shadow>
+          </Border>
+          <Label
+            Grid.Column="1"
+            Text="{Binding IsConnected, Converter={StaticResource BoolToStatusTextConverter}}"
+            FontSize="13"
+            FontAttributes="Bold"
+            TextColor="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
+            VerticalOptions="Center"
+          />
+        </Grid>
       </Border>
     </Grid>
     <!-- Menu Lateral -->
-    <Border Grid.Column="1" Background="#1a1a1a" StrokeThickness="2" Stroke="#2a2a2a">
-      <VerticalStackLayout Spacing="10">
+    <Border
+      Grid.Column="1"
+      Background="{StaticResource Surface}"
+      StrokeThickness="2"
+      Stroke="{StaticResource Gray200}"
+    >
+      <VerticalStackLayout Spacing="15" Padding="12">
         <!-- Picker de Receitas -->
-        <Picker
-          x:Name="RecipePicker"
-          ItemsSource="{Binding RecipeList}"
-          ItemDisplayBinding="{Binding Name}"
-          SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}"
-          Title="Selecione uma receita"
-          BackgroundColor="#2a2a2a"
-          TextColor="White"
-          TitleColor="#888888"
-          FontSize="12"
-          FontAttributes="Bold"
-          HeightRequest="50"
-          Margin="0,8,0,8"
-        ></Picker>
+        <Border
+          BackgroundColor="{StaticResource SurfaceVariant}"
+          StrokeShape="RoundRectangle 10"
+          StrokeThickness="1"
+          Stroke="{StaticResource Gray300}"
+          Padding="4"
+        >
+          <Picker
+            x:Name="RecipePicker"
+            ItemsSource="{Binding RecipeList}"
+            ItemDisplayBinding="{Binding Name}"
+            SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}"
+            Title="Selecione uma receita"
+            BackgroundColor="Transparent"
+            TextColor="{StaticResource TextPrimary}"
+            TitleColor="{StaticResource TextSecondary}"
+            FontSize="14"
+            FontAttributes="Bold"
+            HeightRequest="50"
+            Margin="8,0"
+          />
+        </Border>
         <!-- Divisor -->
-        <BoxView HeightRequest="1" Color="#3a3a3a" HorizontalOptions="Fill" Margin="0,5,0,5" />
+        <BoxView
+          HeightRequest="1"
+          Color="{StaticResource Gray300}"
+          HorizontalOptions="Fill"
+          Margin="0,5,0,5"
+        />
         <!-- Grid de Contadores -->
-        <Grid ColumnSpacing="8" RowSpacing="8">
+        <Grid ColumnSpacing="12" RowSpacing="12">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
@@ -56,26 +116,27 @@
           <Border
             Grid.Column="0"
             Grid.Row="0"
-            Background="#2a2a2a"
-            Padding="8"
+            Background="{StaticResource CardBackground}"
+            Padding="12"
             StrokeThickness="1"
-            Stroke="#3a3a3a"
-            StrokeShape="RoundRectangle 8"
+            Stroke="{StaticResource Gray800Brush}"
+            StrokeShape="RoundRectangle 12"
+            Shadow="{Shadow Brush={StaticResource Success}, Offset='0,2', Radius=8, Opacity=0.3}"
           >
-            <VerticalStackLayout Spacing="3">
+            <VerticalStackLayout Spacing="6">
               <Label
                 Text="CAIXAS BOAS"
-                FontSize="8"
+                FontSize="10"
                 FontAttributes="Bold"
-                TextColor="#888888"
+                TextColor="{StaticResource TextSecondary}"
                 HorizontalOptions="Center"
               />
               <Label
                 Text="{Binding CaixasBoas}"
-                FontSize="20"
+                FontSize="24"
                 FontAttributes="Bold"
                 HorizontalOptions="Center"
-                TextColor="#4CAF50"
+                TextColor="{StaticResource Success}"
               />
             </VerticalStackLayout>
           </Border>
@@ -83,26 +144,27 @@
           <Border
             Grid.Column="1"
             Grid.Row="0"
-            Background="#2a2a2a"
-            Padding="8"
+            Background="{StaticResource CardBackground}"
+            Padding="12"
             StrokeThickness="1"
-            Stroke="#3a3a3a"
-            StrokeShape="RoundRectangle 8"
+            Stroke="{StaticResource Gray800Brush}"
+            StrokeShape="RoundRectangle 12"
+            Shadow="{Shadow Brush={StaticResource Danger}, Offset='0,2', Radius=8, Opacity=0.3}"
           >
-            <VerticalStackLayout Spacing="3">
+            <VerticalStackLayout Spacing="6">
               <Label
                 Text="CAIXAS RUINS"
-                FontSize="8"
+                FontSize="10"
                 FontAttributes="Bold"
-                TextColor="#888888"
+                TextColor="{StaticResource TextSecondary}"
                 HorizontalOptions="Center"
               />
               <Label
                 Text="{Binding CaixasRejeitadas}"
-                FontSize="20"
+                FontSize="24"
                 FontAttributes="Bold"
                 HorizontalOptions="Center"
-                TextColor="#F44336"
+                TextColor="{StaticResource Danger}"
               />
             </VerticalStackLayout>
           </Border>
@@ -111,26 +173,27 @@
             Grid.Column="0"
             Grid.Row="1"
             Grid.ColumnSpan="2"
-            Background="#2a2a2a"
-            Padding="10"
+            Background="{StaticResource CardBackground}"
+            Padding="14"
             StrokeThickness="1"
-            Stroke="#3a3a3a"
-            StrokeShape="RoundRectangle 8"
+            Stroke="{StaticResource Gray800Brush}"
+            StrokeShape="RoundRectangle 12"
+            Shadow="{Shadow Brush={StaticResource Primary}, Offset='0,2', Radius=8, Opacity=0.3}"
           >
-            <VerticalStackLayout Spacing="3">
+            <VerticalStackLayout Spacing="6">
               <Label
-                Text="TOTAL DE CAIXAS"
-                FontSize="9"
+                Text="TOTAL DE CAIXAS INSPECIONADAS"
+                FontSize="11"
                 FontAttributes="Bold"
-                TextColor="#888888"
+                TextColor="{StaticResource TextSecondary}"
                 HorizontalOptions="Center"
               />
               <Label
                 Text="{Binding TotalCaixas}"
-                FontSize="22"
+                FontSize="28"
                 FontAttributes="Bold"
                 HorizontalOptions="Center"
-                TextColor="{StaticResource Secondary}"
+                TextColor="{StaticResource TextPrimary}"
               />
             </VerticalStackLayout>
           </Border>
@@ -138,50 +201,17 @@
         <Button
           Text="RESETAR CONTADOR"
           Clicked="ResetCount"
-          BackgroundColor="#2a2a2a"
-          TextColor="#FF9800"
-          FontSize="11"
+          BackgroundColor="{StaticResource Warning}"
+          TextColor="White"
+          FontSize="13"
           FontAttributes="Bold"
-          HeightRequest="45"
-          CornerRadius="8"
-          BorderWidth="1"
-          BorderColor="#3a3a3a"
-          Margin="0,0,0,45"
+          HeightRequest="50"
+          CornerRadius="12"
+          Margin="0,10,0,0"
+          Shadow="{Shadow Brush={StaticResource Warning}, Offset='0,2', Radius=8, Opacity=0.3}"
         />
-        <!-- Status de Conexão -->
-        <Grid Grid.Row="1" Background="#2a2a2a" Padding="12" ColumnSpacing="8">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <Border
-            Grid.Column="0"
-            WidthRequest="16"
-            HeightRequest="16"
-            StrokeThickness="2"
-            Stroke="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-            StrokeShape="RoundRectangle 8"
-            Background="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-            VerticalOptions="Center"
-          >
-            <Border.Shadow>
-              <Shadow
-                Brush="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-                Radius="8"
-                Opacity="0.8"
-              />
-            </Border.Shadow>
-          </Border>
-          <Label
-            Grid.Column="1"
-            Text="{Binding IsConnected, Converter={StaticResource BoolToStatusTextConverter}}"
-            FontSize="11"
-            FontAttributes="Bold"
-            TextColor="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}"
-            VerticalOptions="Center"
-          />
-        </Grid>
       </VerticalStackLayout>
     </Border>
+    <Label Text="© 2025 Conecsa Automação e TI" FontAttributes="Bold" Margin="170, 370, 0, 0" />
   </Grid>
 </ContentPage>

@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using Sharp7.Rx.Enums;
 using UAUIngleza_plc.Interfaces;
 using UAUIngleza_plc.Models;
-using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc
 {
@@ -14,9 +13,9 @@ namespace UAUIngleza_plc
     {
         public Command ChangeRecipe { get; private set; }
         private readonly CompositeDisposable _disposables = [];
-        private readonly IStorageService _storageService;
+        private readonly IConfigRepository _configRepository;
+        private readonly IRecipeRepository _recipeRepository;
         private readonly IPlcService _plcService;
-        private RecipesConfiguration _recipesConfig = new();
         private bool _isUpdatingFromPLC = false;
 
         public ObservableCollection<Recipe> RecipeList { get; } = [];
@@ -29,7 +28,7 @@ namespace UAUIngleza_plc
             {
                 if (SetField(ref _selectedRecipe, value) && value != null && !_isUpdatingFromPLC)
                 {
-                    _ = WriteRecipeToPLC(value.Id.ToString());
+                    _ = WriteRecipeDataToPLC(value);
                 }
             }
         }
@@ -88,10 +87,15 @@ namespace UAUIngleza_plc
             return true;
         }
 
-        public MainPage(IStorageService storageService, IPlcService plcService)
+        public MainPage(
+            IConfigRepository configRepository,
+            IRecipeRepository recipeRepository,
+            IPlcService plcService
+        )
         {
             InitializeComponent();
-            _storageService = storageService;
+            _configRepository = configRepository;
+            _recipeRepository = recipeRepository;
             _plcService = plcService;
 
             ChangeRecipe = new(
@@ -119,17 +123,17 @@ namespace UAUIngleza_plc
         {
             try
             {
-                _recipesConfig = await _storageService.GetRecipesAsync();
+                var recipes = await _recipeRepository.GetAsync<Recipe>();
 
                 RecipeList.Clear();
-                foreach (var recipe in _recipesConfig.Recipes)
+                foreach (var recipe in recipes)
                 {
                     RecipeList.Add(recipe);
                 }
 
-                if (_recipesConfig.Recipes.Count > 0)
+                if (recipes.Count > 0)
                 {
-                    SelectedRecipe = _recipesConfig.Recipes[0];
+                    SelectedRecipe = recipes[0];
                 }
             }
             catch (Exception ex)
@@ -142,7 +146,7 @@ namespace UAUIngleza_plc
         {
             try
             {
-                var config = await _storageService.GetConfigAsync();
+                var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
                 string urlStream = $"http://{config.CameraIp}:60000/api/v1/script_stream";
 
                 string htmlContent =
@@ -298,9 +302,19 @@ namespace UAUIngleza_plc
             }
         }
 
-        private void ResetCount(object sender, EventArgs args)
+        private async void ResetCount(object sender, EventArgs args)
         {
-            Task.Run(async () =>
+            bool confirm = await DisplayAlertAsync(
+                "Confirmar Reset",
+                "Deseja realmente resetar todos os contadores?",
+                "Sim",
+                "Não"
+            );
+
+            if (!confirm)
+                return;
+
+            await Task.Run(async () =>
             {
                 try
                 {
@@ -309,11 +323,27 @@ namespace UAUIngleza_plc
                         await _plcService.Plc!.SetValue<short>("DB1.INT0", 0);
                         await _plcService.Plc!.SetValue<short>("DB1.INT2", 0);
                         await _plcService.Plc!.SetValue<short>("DB1.INT4", 0);
+
+                        MainThread.BeginInvokeOnMainThread(async () =>
+                        {
+                            await DisplayAlertAsync(
+                                "Sucesso",
+                                "Contadores resetados com sucesso!",
+                                "OK"
+                            );
+                        });
                     }
                 }
                 catch (Exception ex)
                 {
-                    await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await DisplayAlertAsync(
+                            "Erro",
+                            $"Erro ao resetar contadores: {ex.Message}",
+                            "OK"
+                        );
+                    });
                 }
             });
         }
@@ -333,6 +363,22 @@ namespace UAUIngleza_plc
                 {
                     await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
                 }
+        }
+
+        public async Task WriteRecipeDataToPLC(Recipe recipe)
+        {
+            try
+            {
+                if (_plcService.Plc != null)
+                {
+                    await _plcService.Plc.SetValue<short>("DB100.INT14", (short)recipe.Id);
+                    await _plcService.Plc.SetValue<short>("DB100.INT18", (short)recipe.Bottles);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao escrever receita no PLC: {ex.Message}");
+            }
         }
 
         public new event PropertyChangedEventHandler? PropertyChanged;

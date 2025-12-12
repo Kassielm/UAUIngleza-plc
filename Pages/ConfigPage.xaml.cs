@@ -1,15 +1,16 @@
-﻿using UAUIngleza_plc.Services;
+﻿using UAUIngleza_plc.Interfaces;
+using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc.Pages
 {
-    public partial class ConfiguracoesPage : ContentPage
+    public partial class ConfigPage : ContentPage
     {
-        private readonly IStorageService _storageService;
+        private readonly IConfigRepository _configRepository;
 
-        public ConfiguracoesPage(IStorageService storageService)
+        public ConfigPage(IConfigRepository configRepository)
         {
             InitializeComponent();
-            _storageService = storageService;
+            _configRepository = configRepository;
         }
 
         protected override async void OnAppearing()
@@ -22,8 +23,8 @@ namespace UAUIngleza_plc.Pages
         {
             try
             {
-                var config = await _storageService.GetConfigAsync();
-                
+                var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
+
                 if (config != null)
                 {
                     IpEntry.Text = config.IpAddress ?? "192.168.2.1";
@@ -55,7 +56,11 @@ namespace UAUIngleza_plc.Pages
             {
                 if (!ValidateInputs())
                 {
-                    await DisplayAlertAsync("Erro", "⚠️ Preencha todos os campos corretamente", "OK");
+                    await DisplayAlertAsync(
+                        "Erro",
+                        "⚠️ Preencha todos os campos corretamente",
+                        "OK"
+                    );
                     return;
                 }
 
@@ -64,11 +69,11 @@ namespace UAUIngleza_plc.Pages
                     IpAddress = IpEntry.Text?.Trim() ?? "192.168.2.1",
                     Rack = int.TryParse(RackEntry.Text, out int rack) ? rack : 0,
                     Slot = int.TryParse(SlotEntry.Text, out int slot) ? slot : 1,
-                    CameraIp = CameraEntry.Text?.Trim() ?? "192.168.0.101"
+                    CameraIp = CameraEntry.Text?.Trim() ?? "192.168.0.101",
                 };
 
-                await _storageService.SaveConfigAsync(config);
-                
+                await _configRepository.SaveAsync(config);
+
                 await DisplayAlertAsync("Sucesso", "✅ Configuração salva com sucesso!", "OK");
             }
             catch (Exception ex)

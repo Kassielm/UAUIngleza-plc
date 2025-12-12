@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:UAUIngleza_plc"
              xmlns:converters="clr-namespace:UAUIngleza_plc.Converters"
-             x:Class="UAUIngleza_plc.App">
+             x:Class="UAUIngleza_plc.App"
+             UserAppTheme="Dark">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

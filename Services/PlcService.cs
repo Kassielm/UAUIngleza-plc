@@ -7,10 +7,10 @@ using UAUIngleza_plc.Interfaces;
 
 namespace UAUIngleza_plc.Services
 {
-    public partial class PLCService(IStorageService storageService) : IPlcService, IDisposable
+    public partial class PLCService(IConfigRepository configRepository) : IPlcService, IDisposable
     {
+        private readonly IConfigRepository _configRepository = configRepository;
         private const ConnectionState Value = default;
-        private readonly IStorageService _storageService = storageService;
         private readonly BehaviorSubject<ConnectionState> _connectionStatus = new(Value);
         private CancellationTokenSource? _reconnectCancellation;
         private IDisposable? _connectionStateSubscription;
@@ -26,7 +26,7 @@ namespace UAUIngleza_plc.Services
             await _connectionLock.WaitAsync();
             try
             {
-                var config = await _storageService.GetConfigAsync();
+                var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
 
                 if (config == null || string.IsNullOrEmpty(config.IpAddress))
                 {

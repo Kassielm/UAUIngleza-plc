@@ -7,7 +7,7 @@ namespace UAUIngleza_plc
     {
         private readonly IPlcService _plcService;
 
-        public App(IPlcService plcService, IStorageService storageService)
+        public App(IPlcService plcService)
         {
             InitializeComponent();
             _plcService = plcService;

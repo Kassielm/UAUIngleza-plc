@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Sharp7.Rx;
+﻿using Sharp7.Rx;
 using Sharp7.Rx.Enums;
 
 namespace UAUIngleza_plc.Interfaces

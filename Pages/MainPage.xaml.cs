@@ -1,84 +1,90 @@
-﻿using Sharp7.Rx.Enums;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using UAUIngleza_plc.Services;
+using Sharp7.Rx.Enums;
 using UAUIngleza_plc.Models;
-using System.Windows.Input;
+using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc
 {
     public partial class MainPage : ContentPage, INotifyPropertyChanged
     {
-        public ICommand ChangeRecipe { get; private set; }
+        public Command ChangeRecipe { get; private set; }
         private readonly CompositeDisposable _disposables = [];
         private readonly IStorageService _storageService;
         private readonly IPLCService _plcService;
         private RecipesConfiguration _recipesConfig = new();
-        private readonly List<Button> _recipeControls;
-        private readonly Dictionary<string, object> _propertyValues = [];
+        private bool _isUpdatingFromPLC = false;
 
-        public string RecipeValue
+        public ObservableCollection<Recipe> RecipeList { get; } = [];
+
+        private Recipe? _selectedRecipe;
+        public Recipe? SelectedRecipe
         {
-            get => GetProperty("---");
-            set => SetProperty(value);
+            get => _selectedRecipe;
+            set
+            {
+                if (SetField(ref _selectedRecipe, value) && value != null && !_isUpdatingFromPLC)
+                {
+                    _ = WriteRecipeToPLC(value.Id.ToString());
+                }
+            }
         }
 
+        private static readonly string defaultRecipeValue = "---";
+
+        private readonly int _recipeIndex = 0;
+        public int RecipeValue
+        {
+            get => _recipeIndex;
+            set => RecipePicker.SelectedIndex = value;
+        }
+
+        private string _totalCaixas = defaultRecipeValue;
         public string TotalCaixas
         {
-            get => GetProperty("---");
-            set => SetProperty(value);
+            get => _totalCaixas;
+            set => SetField(ref _totalCaixas, value);
         }
 
+        private string _caixasBoas = defaultRecipeValue;
         public string CaixasBoas
         {
-            get => GetProperty("---");
-            set => SetProperty(value);
+            get => _caixasBoas;
+            set => SetField(ref _caixasBoas, value);
         }
 
+        private string _caixasRejeitadas = defaultRecipeValue;
         public string CaixasRejeitadas
         {
-            get => GetProperty("---");
-            set => SetProperty(value);
+            get => _caixasRejeitadas;
+            set => SetField(ref _caixasRejeitadas, value);
         }
 
+        private string _connectionStatus = "Verificando conexão...";
         public string ConnectionStatus
         {
-            get => GetProperty("🔄 Verificando conexão...");
-            set => SetProperty(value);
+            get => _connectionStatus;
+            set => SetField(ref _connectionStatus, value);
         }
 
+        private bool _isConnected;
         public bool IsConnected
         {
-            get => GetProperty(false);
-            set => SetProperty(value);
+            get => _isConnected;
+            set => SetField(ref _isConnected, value);
         }
 
-        private T GetProperty<T>(T defaultValue = default!, [CallerMemberName] string propertyName = "")
+        private bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
         {
-            try
-            {
-                if (_propertyValues.TryGetValue(propertyName, out var value))
-                    return (T)value;
-                return defaultValue;
-            } catch (Exception ex)
-            {
-                Console.WriteLine($"deu ruim: {ex.Message}");
-                return defaultValue;
-            }
-        }
+            if (EqualityComparer<T>.Default.Equals(field, value))
+                return false;
 
-        private void SetProperty<T>(T value, [CallerMemberName] string propertyName = "")
-        {
-            if (_propertyValues.TryGetValue(propertyName, out var existingValue))
-            {
-                if (EqualityComparer<T>.Default.Equals((T)existingValue, value))
-                    return;
-            }
-
-            _propertyValues[propertyName] = value!;
+            field = value;
             OnPropertyChanged(propertyName);
+            return true;
         }
 
         public MainPage(IStorageService storageService, IPLCService plcService)
@@ -87,20 +93,9 @@ namespace UAUIngleza_plc
             _storageService = storageService;
             _plcService = plcService;
 
-            _recipeControls =
-            [
-                Recipe1Name,
-                Recipe2Name,
-                Recipe3Name,
-                Recipe4Name,
-                Recipe5Name,
-                Recipe6Name,
-                Recipe7Name,
-                Recipe8Name,
-                Recipe9Name,
-                Recipe10Name
-            ];
-            ChangeRecipe = new Command<string>(async (param) => await WriteRecipeToPLC(param));
+            ChangeRecipe = new(
+                async (param) => await WriteRecipeToPLC(param?.ToString() ?? string.Empty)
+            );
             BindingContext = this;
         }
 
@@ -125,20 +120,20 @@ namespace UAUIngleza_plc
             {
                 _recipesConfig = await _storageService.GetRecipesAsync();
 
-                for (int i = 0; i < _recipeControls.Count; i++)
+                RecipeList.Clear();
+                foreach (var recipe in _recipesConfig.Recipes)
                 {
-                    if (i < _recipesConfig.Recipes.Count)
-                    {
-                        var recipe = _recipesConfig.Recipes[i];
-                        var nameEntry = _recipeControls[i];
+                    RecipeList.Add(recipe);
+                }
 
-                        nameEntry.Text = recipe.Name;
-                    }
+                if (_recipesConfig.Recipes.Count > 0)
+                {
+                    SelectedRecipe = _recipesConfig.Recipes[0];
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao carregar receitas: {ex.Message}");
+                await DisplayAlertAsync("Erro", $"Erro ao carregar receitas: {ex.Message}", "OK");
             }
         }
 
@@ -149,7 +144,8 @@ namespace UAUIngleza_plc
                 var config = await _storageService.GetConfigAsync();
                 string urlStream = $"http://{config.CameraIp}:60000/api/v1/script_stream";
 
-                string htmlContent = $@"
+                string htmlContent =
+                    $@"
                 <html>
                 <head>
                     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
@@ -176,24 +172,25 @@ namespace UAUIngleza_plc
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    CameraWebView.Source = new HtmlWebViewSource
-                    {
-                        Html = htmlContent
-                    };
+                    CameraWebView.Source = new HtmlWebViewSource { Html = htmlContent };
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro no teste: {ex.Message}");
+                await DisplayAlertAsync(
+                    "Erro",
+                    $"Erro ao carregar configuração da câmera: {ex.Message}",
+                    "OK"
+                );
             }
         }
 
-        private void SubscribeToConnectionStatus()
+        private async void SubscribeToConnectionStatus()
         {
             try
             {
-                var connectionSubscription = _plcService.ConnectionStatus
-                    .DistinctUntilChanged()
+                var connectionSubscription = _plcService
+                    .ConnectionStatus.DistinctUntilChanged()
                     .ObserveOn(SynchronizationContext.Current!)
                     .Subscribe(
                         state =>
@@ -207,106 +204,139 @@ namespace UAUIngleza_plc
                             {
                                 ConnectionStatus = "OFFLINE";
                                 IsConnected = false;
-                                RecipeValue = "---";
                             }
                         },
                         error =>
                         {
-                            ConnectionStatus = "ERRO NO STATUS";
+                            ConnectionStatus = "ERROR";
                             IsConnected = false;
-                        });
+                        }
+                    );
 
                 _disposables.Add(connectionSubscription);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao subscrever status de conexão: {ex.Message}");
+                await DisplayAlertAsync(
+                    "Erro",
+                    $"Erro ao subscrever status de conexão: {ex.Message}",
+                    "OK"
+                );
             }
         }
 
-        private void SubscribeToBitChanges()
+        private async void SubscribeToBitChanges()
         {
             try
             {
-                SubscribeToAddress<short>("DB1.INT0", value => RecipeValue = value.ToString());
-                SubscribeToAddress<short>("DB2.INT0", value => TotalCaixas = value.ToString());
-                SubscribeToAddress<short>("DB2.INT2", value => CaixasBoas = value.ToString());
-                SubscribeToAddress<short>("DB2.INT4", value => CaixasRejeitadas = value.ToString());
+                SubscribeToAddress<short>(
+                    "DB100.INT14",
+                    value =>
+                    {
+                        _isUpdatingFromPLC = true;
+                        try
+                        {
+                            if (value >= 0 && value < RecipeList.Count)
+                            {
+                                SelectedRecipe = RecipeList[value - 1];
+                            }
+                        }
+                        finally
+                        {
+                            _isUpdatingFromPLC = false;
+                        }
+                    }
+                );
+                SubscribeToAddress<short>("DB1.INT0", value => TotalCaixas = value.ToString());
+                SubscribeToAddress<short>("DB1.INT2", value => CaixasBoas = value.ToString());
+                SubscribeToAddress<short>("DB1.INT4", value => CaixasRejeitadas = value.ToString());
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao subscrever mudanças do bit: {ex.Message}");
+                await DisplayAlertAsync(
+                    "Erro",
+                    $"Erro ao inscrever eventos do plc: {ex.Message}",
+                    "OK"
+                );
             }
         }
 
-        private void SubscribeToAddress<T>(string address, Action<T> onValueChanged) where T : struct
+        private async void SubscribeToAddress<T>(string address, Action<T> onValueChanged)
+            where T : struct
         {
             try
             {
-                var subscription = _plcService.ObserveAddress<T>(address)
+                var subscription = _plcService
+                    .ObserveAddress<T>(address)
                     .ObserveOn(SynchronizationContext.Current!)
                     .Subscribe(
                         value => onValueChanged(value),
-                        error =>
+                        async error =>
                         {
-                            Console.WriteLine($"Erro na notificação para {address}: {error.Message}");
+                            await DisplayAlertAsync(
+                                "Erro",
+                                $"Erro na notificação para {address}: {error.Message}",
+                                "OK"
+                            );
                             if (typeof(T) == typeof(short) || typeof(T) == typeof(int))
                             {
                                 onValueChanged((T)(object)0);
                             }
-                        });
+                        }
+                    );
 
                 _disposables.Add(subscription);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao subscrever {address}: {ex.Message}");
+                await DisplayAlertAsync(
+                    "Erro",
+                    $"Erro ao subscrever {address}: {ex.Message}",
+                    "OK"
+                );
             }
         }
 
-        public async Task ResetCount()
+        private void ResetCount(object sender, EventArgs args)
         {
-            try
+            Task.Run(async () =>
             {
-                if (_plcService.Plc != null)
+                try
                 {
-                    await _plcService.Plc!.SetValue<short>("DB2.INT0", 0);
-                    await _plcService.Plc!.SetValue<short>("DB2.INT2", 0);
-                    await _plcService.Plc!.SetValue<short>("DB2.INT4", 0);
+                    if (_plcService.Plc != null)
+                    {
+                        await _plcService.Plc!.SetValue<short>("DB1.INT0", 0);
+                        await _plcService.Plc!.SetValue<short>("DB1.INT2", 0);
+                        await _plcService.Plc!.SetValue<short>("DB1.INT4", 0);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
-            }
+                catch (Exception ex)
+                {
+                    await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
+                }
+            });
         }
 
         public async Task WriteRecipeToPLC(string recipeValue)
         {
             if (short.TryParse(recipeValue, out short recipeNumber))
-            try
-            {
-                if (_plcService.Plc != null)
+                try
                 {
-                    await _plcService.Plc!.SetValue<short>("DB1.INT0", (short)recipeNumber);
-                    return;
+                    if (_plcService.Plc != null)
+                    {
+                        await _plcService.Plc!.SetValue<short>("DB100.INT14", (short)recipeNumber);
+                        return;
+                    }
                 }
-
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
-            }
-        }
-
-        private void OnMenuClicked(object? sender, EventArgs e)
-        {
-            Shell.Current.FlyoutIsPresented = !Shell.Current.FlyoutIsPresented;
+                catch (Exception ex)
+                {
+                    await DisplayAlertAsync("Erro", $"Erro: {ex.Message}", "OK");
+                }
         }
 
         public new event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        protected new void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

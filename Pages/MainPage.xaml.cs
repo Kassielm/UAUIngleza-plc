@@ -264,6 +264,13 @@ namespace UAUIngleza_plc
                 SubscribeToAddress<short>("DB1.INT0", value => TotalCaixas = value.ToString());
                 SubscribeToAddress<short>("DB1.INT2", value => CaixasBoas = value.ToString());
                 SubscribeToAddress<short>("DB1.INT4", value => CaixasRejeitadas = value.ToString());
+                SubscribeToAddress<bool>("DB1.DBX6.0", status =>
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ExpulsorButton.BackgroundColor = status ? Colors.Green : Colors.Red;
+                    });
+                });
             }
             catch (Exception ex)
             {
@@ -355,6 +362,37 @@ namespace UAUIngleza_plc
                     });
                 }
             });
+        }
+
+       public async void ToggleExpulsador(object sender, EventArgs args)
+        {
+            try
+            {
+                if (_plcService.Plc != null)
+                {
+                    bool currentStatus = await _plcService.Plc!.GetValue<bool>("DB1.DBX6.0");
+                    bool newStatus = !currentStatus;
+                    await _plcService.Plc!.SetValue<bool>("DB1.DBX6.0", newStatus);
+                    ExpulsorButton.BackgroundColor = newStatus ? Colors.Green : Colors.Red;
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync("Erro", $"Erro ao alternar status do expulsor: {ex.Message}", "OK");
+            }
+        }
+
+        public async void VerifyExpulsadorStatus()
+        {
+            try
+            {
+                bool status = await _plcService.Plc!.GetValue<bool>("DB1.BBX6.0");
+                ExpulsorButton.BackgroundColor = status ? Colors.Green : Colors.Red;
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync("Erro", $"Erro ao verificar status do expulsor: {ex.Message}", "OK");
+            }
         }
 
         public async Task WriteRecipeToPLC(string recipeValue)

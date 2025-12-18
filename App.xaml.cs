@@ -1,12 +1,13 @@
-﻿using UAUIngleza_plc.Services;
+﻿using UAUIngleza_plc.Interfaces;
+using UAUIngleza_plc.Services;
 
 namespace UAUIngleza_plc
 {
     public partial class App : Application
     {
-        private readonly IPLCService _plcService;
+        private readonly IPlcService _plcService;
 
-        public App(IPLCService plcService, IStorageService storageService)
+        public App(IPlcService plcService)
         {
             InitializeComponent();
             _plcService = plcService;
@@ -20,7 +21,7 @@ namespace UAUIngleza_plc
         protected override void OnStart()
         {
             base.OnStart();
-            
+
             // Inicia a conexão em background sem bloquear a UI
             _ = Task.Run(async () =>
             {

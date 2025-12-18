@@ -1,46 +1,72 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Shell
-    x:Class="UAUIngleza_plc.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:UAUIngleza_plc"
-    xmlns:pages="clr-namespace:UAUIngleza_plc.Pages"
-    Title="UAUIngleza_plc"
-    FlyoutBehavior="Flyout"
-    FlyoutWidth="250">
-
-    <!-- Header do Flyout -->
-    <Shell.FlyoutHeader>
-        <Grid BackgroundColor="LightGray" 
-              HeightRequest="135" >
-            <Image Source="logo_conecsa.png"
-                   Aspect="AspectFit"
-                   VerticalOptions="Center"
-                   HorizontalOptions="Center" />
-        </Grid>
-    </Shell.FlyoutHeader>
-
-    <!-- Item Principal -->
-    <FlyoutItem Title="Camera" Icon="home.png">
-        <ShellContent
-            Title="Camera"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="MainPage" />
-    </FlyoutItem>
-
-    <!-- Configurações -->
-    <FlyoutItem Title="Configurações" Icon="settings.png">
-        <ShellContent
-            Title="Configurações"
-            ContentTemplate="{DataTemplate pages:ConfiguracoesPage}"
-            Route="ConfiguracoesPage" />
-    </FlyoutItem>
-    
-    <!-- Configuração das receitas -->
-    <FlyoutItem Title="Receitas">
-        <ShellContent
-            Title="Receitas"
-            ContentTemplate="{DataTemplate pages:ReceitasPage}"
-            Route="ReceitasPage" />
-    </FlyoutItem>
+  x:Class="UAUIngleza_plc.AppShell"
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:local="clr-namespace:UAUIngleza_plc"
+  xmlns:pages="clr-namespace:UAUIngleza_plc.Pages"
+  Title="UAUIngleza_plc"
+  FlyoutBehavior="Flyout"
+  FlyoutWidth="280"
+  FlyoutBackgroundColor="{StaticResource Surface}"
+  Shell.BackgroundColor="{StaticResource Background}"
+  Shell.ForegroundColor="{StaticResource TextPrimary}"
+  Shell.TitleColor="{StaticResource TextPrimary}"
+>
+  <!-- Estilos do Shell -->
+  <Shell.Resources>
+    <Style TargetType="TabBar">
+      <Setter Property="Shell.BackgroundColor" Value="{StaticResource Surface}" />
+      <Setter Property="Shell.ForegroundColor" Value="{StaticResource TextPrimary}" />
+      <Setter Property="Shell.TitleColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+    <Style TargetType="FlyoutItem">
+      <Setter Property="Shell.BackgroundColor" Value="{StaticResource Surface}" />
+      <Setter Property="Shell.ForegroundColor" Value="{StaticResource TextPrimary}" />
+    </Style>
+  </Shell.Resources>
+  <!-- Header do Flyout -->
+  <Shell.FlyoutHeader>
+    <Border BackgroundColor="{StaticResource Primary}" HeightRequest="150" Padding="20">
+      <VerticalStackLayout VerticalOptions="Center" Spacing="10">
+        <Image
+          Source="logo_conecsa.png"
+          Aspect="AspectFit"
+          HeightRequest="80"
+          HorizontalOptions="Center"
+        />
+        <Label
+          Text="Sistema Visão UAU Ingleza"
+          FontSize="14"
+          FontAttributes="Bold"
+          TextColor="White"
+          HorizontalOptions="Center"
+        />
+      </VerticalStackLayout>
+    </Border>
+  </Shell.FlyoutHeader>
+  <!-- Item Principal -->
+  <FlyoutItem Title="Câmera" Icon="home.png">
+    <ShellContent Title="Câmera" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+  </FlyoutItem>
+  <!-- Configuração das receitas -->
+  <FlyoutItem Title="Receitas" Icon="settings.png">
+    <ShellContent
+      Title="Receitas"
+      ContentTemplate="{DataTemplate pages:ReceitasPage}"
+      Route="ReceitasPage"
+    />
+  </FlyoutItem>
+  <!-- Configurações -->
+  <FlyoutItem Title="Configurações" Icon="settings.png">
+    <ShellContent
+      Title="Configurações"
+      ContentTemplate="{DataTemplate pages:ConfigPage}"
+      Route="ConfigPage"
+    />
+  </FlyoutItem>
+  <!-- Estilo do Flyout Background -->
+  <Shell.FlyoutBackdrop>
+    <SolidColorBrush Color="#80000000" />
+  </Shell.FlyoutBackdrop>
 </Shell>

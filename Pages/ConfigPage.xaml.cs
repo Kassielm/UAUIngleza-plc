@@ -1,15 +1,15 @@
-﻿using UAUIngleza_plc.Services;
+﻿using UAUIngleza_plc.Interfaces;
 
 namespace UAUIngleza_plc.Pages
 {
-    public partial class ConfiguracoesPage : ContentPage
+    public partial class ConfigPage : ContentPage
     {
-        private readonly IStorageService _storageService;
+        private readonly IConfigRepository _configRepository;
 
-        public ConfiguracoesPage(IStorageService storageService)
+        public ConfigPage(IConfigRepository configRepository)
         {
             InitializeComponent();
-            _storageService = storageService;
+            _configRepository = configRepository;
         }
 
         protected override async void OnAppearing()
@@ -22,31 +22,22 @@ namespace UAUIngleza_plc.Pages
         {
             try
             {
-                var config = await _storageService.GetConfigAsync();
-                
-                if (config != null)
-                {
-                    IpEntry.Text = config.IpAddress ?? "192.168.2.1";
-                    RackEntry.Text = config.Rack.ToString();
-                    SlotEntry.Text = config.Slot.ToString();
-                    CameraEntry.Text = config.CameraIp ?? "192.168.0.101";
-                }
-                else
-                {
-                    IpEntry.Text = "192.168.2.1";
-                    RackEntry.Text = "0";
-                    SlotEntry.Text = "1";
-                    CameraEntry.Text = "192.168.0.101";
-                }
+                var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
+                LoadConfigurationValues(config);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro ao carregar configuração: {ex.Message}");
-                IpEntry.Text = "192.168.2.1";
-                RackEntry.Text = "0";
-                SlotEntry.Text = "1";
-                CameraEntry.Text = "192.168.0.101";
+                LoadConfigurationValues(null);
             }
+        }
+
+        private void LoadConfigurationValues(Models.SystemConfiguration? config)
+        {
+            IpEntry.Text = config?.IpAddress ?? "192.168.2.1";
+            RackEntry.Text = (config?.Rack ?? 0).ToString();
+            SlotEntry.Text = (config?.Slot ?? 1).ToString();
+            CameraEntry.Text = config?.CameraIp ?? "192.168.0.101";
         }
 
         private async void OnSaveConfigClicked(object sender, EventArgs e)
@@ -55,7 +46,11 @@ namespace UAUIngleza_plc.Pages
             {
                 if (!ValidateInputs())
                 {
-                    await DisplayAlertAsync("Erro", "⚠️ Preencha todos os campos corretamente", "OK");
+                    await DisplayAlertAsync(
+                        "Erro",
+                        "⚠️ Preencha todos os campos corretamente",
+                        "OK"
+                    );
                     return;
                 }
 
@@ -64,11 +59,11 @@ namespace UAUIngleza_plc.Pages
                     IpAddress = IpEntry.Text?.Trim() ?? "192.168.2.1",
                     Rack = int.TryParse(RackEntry.Text, out int rack) ? rack : 0,
                     Slot = int.TryParse(SlotEntry.Text, out int slot) ? slot : 1,
-                    CameraIp = CameraEntry.Text?.Trim() ?? "192.168.0.101"
+                    CameraIp = CameraEntry.Text?.Trim() ?? "192.168.0.101",
                 };
 
-                await _storageService.SaveConfigAsync(config);
-                
+                await _configRepository.SaveAsync(config);
+
                 await DisplayAlertAsync("Sucesso", "✅ Configuração salva com sucesso!", "OK");
             }
             catch (Exception ex)

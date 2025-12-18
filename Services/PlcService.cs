@@ -1,32 +1,19 @@
-﻿using Sharp7.Rx;
-using Sharp7.Rx.Enums;
-using System.Diagnostics;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Sharp7.Rx;
+using Sharp7.Rx.Enums;
+using UAUIngleza_plc.Interfaces;
 
 namespace UAUIngleza_plc.Services
 {
-    public interface IPLCService
+    public partial class PLCService(IConfigRepository configRepository) : IPlcService, IDisposable
     {
-        Sharp7Plc? Plc { get; }
-        IObservable<ConnectionState> ConnectionStatus { get; }
-        bool IsConnected { get; }
-        Task<bool> ConnectAsync();
-        void Disconnect();
-        Task StartAutoReconnect();
-        void StopAutoReconnect();
-        IObservable<T> ObserveAddress<T>(string address, TransmissionMode mode = TransmissionMode.OnChange) where T : struct;
-        void Dispose();
-    }
-
-    public partial class PLCService(IStorageService storageService) : IPLCService, IDisposable
-    {
+        private readonly IConfigRepository _configRepository = configRepository;
         private const ConnectionState Value = default;
-        private readonly IStorageService _storageService = storageService;
         private readonly BehaviorSubject<ConnectionState> _connectionStatus = new(Value);
         private CancellationTokenSource? _reconnectCancellation;
         private IDisposable? _connectionStateSubscription;
-        private bool _isReconnecting = false;
+        private Task? _reconnectTask;
         private readonly SemaphoreSlim _connectionLock = new(1, 1);
 
         public Sharp7Plc? Plc { get; private set; }
@@ -38,18 +25,15 @@ namespace UAUIngleza_plc.Services
             await _connectionLock.WaitAsync();
             try
             {
-                var config = await _storageService.GetConfigAsync();
+                var config = await _configRepository.GetOneAsync<Models.SystemConfiguration>(0);
 
                 if (config == null || string.IsNullOrEmpty(config.IpAddress))
                 {
-                    Console.WriteLine("⚠️ Nenhuma configuração encontrada no Storage.");
                     _connectionStatus.OnNext(default);
                     return false;
                 }
 
                 CleanupConnection();
-
-                Console.WriteLine($"🔄 Tentando conectar em: {config.IpAddress} Rack: {config.Rack} Slot: {config.Slot}");
 
                 Plc = new Sharp7Plc(config.IpAddress, config.Rack, config.Slot);
 
@@ -60,22 +44,17 @@ namespace UAUIngleza_plc.Services
 
                 if (completedTask == timeoutTask)
                 {
-                    Console.WriteLine("⏱️ Timeout ao conectar ao PLC");
                     _connectionStatus.OnNext(default);
                     CleanupConnection();
-                    Console.WriteLine("❌ Falha na conexão!");
                     return false;
                 }
 
-                // Subscreve ao estado de conexão do PLC
                 SubscribeToConnectionState();
 
-                Console.WriteLine("✅ Conexão Inicializada!");
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine($"❌ Exceção ao conectar PLC: {ex.Message}");
                 _connectionStatus.OnNext(default);
                 CleanupConnection();
                 return false;
@@ -88,28 +67,36 @@ namespace UAUIngleza_plc.Services
 
         private void SubscribeToConnectionState()
         {
-            if (Plc == null) return;
+            if (Plc == null)
+                return;
 
             _connectionStateSubscription?.Dispose();
 
-            _connectionStateSubscription = Plc.ConnectionState
-                .DistinctUntilChanged()
+            _connectionStateSubscription = Plc
+                .ConnectionState.DistinctUntilChanged()
                 .Subscribe(
                     state =>
                     {
-                        Console.WriteLine($"🔌 Estado da conexão: {state}");
                         _connectionStatus.OnNext(state);
 
-                        if (state != ConnectionState.Connected && _reconnectCancellation != null && !_reconnectCancellation.IsCancellationRequested)
+                        if (
+                            state != ConnectionState.Connected
+                            && _reconnectCancellation != null
+                            && !_reconnectCancellation.IsCancellationRequested
+                        )
                         {
-                            _ = TryReconnect();
+                            StartReconnectLoop();
                         }
                     },
                     error =>
                     {
-                        Console.WriteLine($"❌ Erro no stream de conexão: {error.Message}");
                         _connectionStatus.OnNext(default);
-                    });
+                        if (_reconnectCancellation != null && !_reconnectCancellation.IsCancellationRequested)
+                        {
+                            StartReconnectLoop();
+                        }
+                    }
+                );
         }
 
         public async Task StartAutoReconnect()
@@ -119,91 +106,60 @@ namespace UAUIngleza_plc.Services
 
             var connected = await ConnectAsync();
             
-            if (!connected)
+            if (!connected && _reconnectCancellation != null && !_reconnectCancellation.IsCancellationRequested)
             {
-                Console.WriteLine("⚠️ Falha na conexão inicial, mas continuando com a aplicação...");
+                StartReconnectLoop();
             }
         }
 
         public void StopAutoReconnect()
         {
             _reconnectCancellation?.Cancel();
-            _isReconnecting = false;
+            _reconnectTask = null;
         }
 
-        private async Task TryReconnect()
+        private void StartReconnectLoop()
         {
-            if (_isReconnecting || _reconnectCancellation?.IsCancellationRequested == true)
+            if (_reconnectTask != null && !_reconnectTask.IsCompleted)
                 return;
 
-            _isReconnecting = true;
-
-            try
-            {
-                Console.WriteLine("🔄 Tentando reconectar ao PLC...");
-                
-                await Task.Delay(3000, _reconnectCancellation?.Token ?? CancellationToken.None);
-
-                if (_reconnectCancellation?.IsCancellationRequested == true)
-                    return;
-
-                var connected = await ConnectAsync();
-
-                if (connected)
+            _reconnectTask = Task.Run(
+                async () =>
                 {
-                    Console.WriteLine("✅ Reconexão bem-sucedida!");
-                }
-                else
-                {
-                    Console.WriteLine("❌ Falha na reconexão. Nova tentativa em 5 segundos...");
-                    await Task.Delay(5000, _reconnectCancellation?.Token ?? CancellationToken.None);
-                    
-                    if (_reconnectCancellation?.IsCancellationRequested == false)
+                    while (_reconnectCancellation?.IsCancellationRequested == false)
                     {
-                        _ = TryReconnect();
+                        try
+                        {
+                            await Task.Delay(3000, _reconnectCancellation.Token);
+
+                            if (_reconnectCancellation.IsCancellationRequested)
+                                break;
+
+                            var connected = await ConnectAsync();
+
+                            if (connected && IsConnected)
+                            {
+                                break;
+                            }
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                Console.WriteLine("⏹️ Reconexão cancelada");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro durante reconexão: {ex.Message}");
-            }
-            finally
-            {
-                _isReconnecting = false;
-            }
+                },
+                _reconnectCancellation?.Token ?? CancellationToken.None
+            );
         }
 
-        public async Task SetIntBit(string address, short value)
-        {
-            try
-            {
-                await Plc!.SetValue<short>(address, value);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro ao definir valor INT no PLC: {ex.Message}");
-            }
-        }
-
-        public async Task<short?> GetIntBit(string address)
-        {
-            try
-            {
-                return await Plc!.GetValue<short>(address);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erro ao obter valor INT do PLC: {ex.Message}");
-                return null;
-            }
-        }
-
-        public IObservable<T> ObserveAddress<T>(string address, TransmissionMode mode = TransmissionMode.OnChange) where T : struct
+        public IObservable<T> ObserveAddress<T>(
+            string address,
+            TransmissionMode mode = TransmissionMode.OnChange
+        )
+            where T : struct
         {
             return ConnectionStatus
                 .Where(state => state == ConnectionState.Connected)
@@ -215,7 +171,6 @@ namespace UAUIngleza_plc.Services
                     return Plc.CreateNotification<T>(address, mode)
                         .Catch<T, Exception>(ex =>
                         {
-                            Console.WriteLine($"⚠️ Erro ao ler {address}: {ex.Message}");
                             return Observable.Return(default(T));
                         });
                 });
@@ -226,7 +181,6 @@ namespace UAUIngleza_plc.Services
             StopAutoReconnect();
             CleanupConnection();
             _connectionStatus.OnNext(default);
-            Console.WriteLine("🔌 Desconectado do PLC");
         }
 
         private void CleanupConnection()
@@ -244,6 +198,7 @@ namespace UAUIngleza_plc.Services
             _reconnectCancellation?.Dispose();
             _connectionStatus?.Dispose();
             _connectionLock?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
